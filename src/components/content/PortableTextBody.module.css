@@ -1,0 +1,90 @@
+.prose {
+  max-width: 72ch;
+  font-size: var(--fs-0);
+  line-height: 1.75;
+  color: var(--text);
+}
+
+.prose h2 {
+  font-size: var(--fs-3);
+  font-weight: 700;
+  margin: var(--sp-6) 0 var(--sp-3);
+  color: var(--text);
+}
+
+.prose h3 {
+  font-size: var(--fs-2);
+  font-weight: 600;
+  margin: var(--sp-5) 0 var(--sp-2);
+  color: var(--text);
+}
+
+.prose h4 {
+  font-size: var(--fs-1);
+  font-weight: 600;
+  margin: var(--sp-4) 0 var(--sp-2);
+  color: var(--text);
+}
+
+.prose p {
+  margin: 0 0 var(--sp-4);
+}
+
+.prose a {
+  color: var(--blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose a:hover {
+  color: var(--blue-bright);
+}
+
+.prose blockquote {
+  border-left: 3px solid var(--blue);
+  padding: var(--sp-2) var(--sp-4);
+  margin: var(--sp-4) 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.prose strong {
+  font-weight: 700;
+}
+
+.prose em {
+  font-style: italic;
+}
+
+/* Embedded images */
+.inlineImage {
+  width: 100%;
+  border-radius: var(--r-md);
+  margin: var(--sp-5) 0;
+}
+
+.imageCaption {
+  font-size: var(--fs--1);
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: var(--sp-1);
+}
+
+/* Embedded YouTube */
+.videoEmbed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  margin: var(--sp-5) 0;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: #000;
+}
+
+.videoEmbed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}

@@ -1,0 +1,92 @@
+.header {
+  display: flex;
+  gap: var(--sp-6);
+  padding: calc(var(--sp-7) + 60px) var(--safe) var(--sp-6);
+  align-items: flex-start;
+}
+
+.poster {
+  position: relative;
+  width: 200px;
+  flex-shrink: 0;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--bg-3);
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.category {
+  font-size: var(--fs--1);
+  font-weight: 700;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--sp-2);
+}
+
+.title {
+  font-size: var(--fs-4);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 var(--sp-3);
+}
+
+.description {
+  font-size: var(--fs-0);
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 60ch;
+  margin: 0;
+}
+
+/* Episodes grid */
+.episodesHeading {
+  font-size: var(--fs-2);
+  font-weight: 700;
+  color: var(--text);
+  padding: 0 var(--safe);
+  margin: 0 0 var(--sp-4);
+}
+
+.episodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--sp-4);
+  padding: 0 var(--safe) var(--sp-7);
+}
+
+.notFound {
+  text-align: center;
+  padding: calc(var(--sp-8) + 60px) var(--safe) var(--sp-8);
+  color: var(--text-muted);
+  font-size: var(--fs-2);
+}
+
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--sp-7) 0;
+  color: var(--text-muted);
+  font-size: var(--fs-0);
+}
+
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .poster {
+    width: 160px;
+  }
+
+  .title {
+    font-size: var(--fs-3);
+  }
+}

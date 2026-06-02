@@ -1,0 +1,51 @@
+.wrapper {
+  position: relative;
+}
+
+.arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 5;
+  width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.wrapper:hover .arrow {
+  opacity: 1;
+}
+
+.arrow[data-dir="left"] {
+  left: 0;
+  background: linear-gradient(90deg, rgba(10, 10, 15, 0.8) 0%, transparent 100%);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+
+.arrow[data-dir="right"] {
+  right: 0;
+  background: linear-gradient(270deg, rgba(10, 10, 15, 0.8) 0%, transparent 100%);
+  border-radius: var(--r-sm) 0 0 var(--r-sm);
+}
+
+.arrow svg {
+  width: 28px;
+  height: 28px;
+}
+
+.arrow:hover {
+  color: #fff;
+}
+
+@media (max-width: 560px) {
+  .arrow {
+    display: none;
+  }
+}
