@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 200" role="img" aria-label="Vishvavahini TV">
+  <title>Vishvavahini TV</title>
+  <desc>Typographic placeholder shown until assets/vishvavahini-logo.png is provided.</desc>
+  <defs>
+    <style>
+      .vv-si { font-family: "Noto Sans Sinhala", "Iskoola Pota", "Nirmala UI", sans-serif; font-weight: 700; fill: #1A3FAF; }
+      .vv-en { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 700; fill: #1A3FAF; }
+    </style>
+  </defs>
+  <!-- Sinhala wordmark -->
+  <text class="vv-si" x="0" y="82" font-size="78" letter-spacing="2">විශ්වවාහිනී</text>
+  <!-- English wordmark -->
+  <text class="vv-en" x="0" y="170" font-size="68" letter-spacing="1">Vishvavahini</text>
+  <!-- Small red + gold accent dots, gestural reference to the flag/globe element -->
+  <circle cx="495" cy="165" r="7" fill="#D13031"/>
+  <circle cx="512" cy="165" r="4" fill="#F2A300"/>
+</svg>

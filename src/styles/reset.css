@@ -1,0 +1,101 @@
+/* ==========================================================================
+   VishTV Reset & Base Element Styles
+   Minimal reset with sensible defaults for the dark streaming UI.
+   ========================================================================== */
+
+/* ------------------------------------------------------------------
+   Box-sizing
+   ------------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ------------------------------------------------------------------
+   Document
+   ------------------------------------------------------------------ */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font: 400 var(--fs-0)/1.55
+    -apple-system, "SF Pro Text", "Inter", "Segoe UI",
+    "Noto Sans Sinhala", Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ------------------------------------------------------------------
+   Media
+   ------------------------------------------------------------------ */
+img,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+/* ------------------------------------------------------------------
+   Links
+   ------------------------------------------------------------------ */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ------------------------------------------------------------------
+   Buttons & inputs
+   ------------------------------------------------------------------ */
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  color: inherit;
+}
+
+input {
+  font: inherit;
+  color: inherit;
+}
+
+/* ------------------------------------------------------------------
+   Headings (margin reset)
+   ------------------------------------------------------------------ */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------
+   Focus — TV-remote / D-pad ready
+   ------------------------------------------------------------------ */
+:focus-visible {
+  outline: 3px solid var(--blue-bright);
+  outline-offset: 3px;
+  border-radius: var(--r-sm);
+}
+
+/* ------------------------------------------------------------------
+   Prefers-reduced-motion
+   ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Prefers-color-scheme (dark is default; light stub for completeness)
+   ------------------------------------------------------------------ */
+@media (prefers-color-scheme: light) {
+  /* VishTV is a dark-first UI. This block is intentionally empty
+     but reserved for future light-mode overrides. */
+}

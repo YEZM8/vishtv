@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "home": "Home",
+    "watch": "Watch",
+    "browse": "Programmes",
+    "news": "News",
+    "radio": "Radio",
+    "events": "Events",
+    "about": "About",
+    "advertise": "Advertise",
+    "contact": "Contact"
+  },
+  "hero": {
+    "headline": "Sri Lankan voices.\nAustralian home.",
+    "subline": "Trusted news, current affairs, drama and music for the Sri Lankan diaspora — broadcasting live from Melbourne to the world.",
+    "watchLive": "Watch live",
+    "schedule": "Tonight's schedule",
+    "myList": "My list"
+  },
+  "rows": {
+    "featured": "Featured",
+    "recentlyAdded": "Recently added",
+    "trending": "Trending this week",
+    "newsroom": "From the newsroom",
+    "seeAll": "See all"
+  },
+  "schedule": {
+    "title": "Tonight's schedule",
+    "onAir": "On air"
+  },
+  "community": {
+    "title": "Vishvavahini is yours",
+    "body": "As a community-owned channel we rely on viewers, sponsors and advertisers to stay on air. Help us tell Sri Lankan stories from Australian soil.",
+    "sponsor": "Sponsor a show",
+    "getInTouch": "Get in touch"
+  },
+  "watch": {
+    "moreFrom": "More from",
+    "noLiveStream": "No live stream right now",
+    "checkBack": "Check back soon or browse our programmes for on-demand content.",
+    "browseProgrammes": "Browse programmes"
+  },
+  "browse": {
+    "title": "Programmes",
+    "all": "All",
+    "noContent": "No programmes in this category yet.",
+    "episodes": "Episodes"
+  },
+  "news": {
+    "title": "News",
+    "noArticles": "No articles yet. Check back soon.",
+    "notFound": "Article not found."
+  },
+  "events": {
+    "title": "Events",
+    "noEvents": "No upcoming events. Check back soon.",
+    "getTickets": "Get tickets"
+  },
+  "radio": {
+    "title": "VishTV Radio",
+    "subtitle": "Sri Lankan community radio broadcasting from Melbourne. Music, talk shows and live coverage — listen anywhere.",
+    "nowStreaming": "Now streaming",
+    "offline": "Radio stream is currently offline.",
+    "offlineHint": "Check back soon or watch our TV programmes instead."
+  },
+  "footer": {
+    "description": "Community television for the Sri Lankan diaspora in Australia. Broadcasting from Melbourne.",
+    "watchSection": "Watch",
+    "connectSection": "Connect",
+    "channelSection": "Channel",
+    "copyright": "Vishvavahini Media",
+    "allRights": "All rights reserved."
+  },
+  "language": {
+    "switchTo": "Switch language to Sinhala",
+    "label": "EN / සිං"
+  },
+  "common": {
+    "skipToContent": "Skip to content",
+    "notFound": "Not found"
+  }
+}

@@ -1,0 +1,82 @@
+/* ==========================================================================
+   VishTV — TV / 10-foot Mode Overrides
+   Enlarged type, spacing, focus rings, and hit targets for smart TVs
+   and D-pad / remote navigation.
+
+   Token-level overrides live in tokens.css under `html.tv`.
+   This file contains component-level layout / interaction overrides.
+   ========================================================================== */
+
+/* ------------------------------------------------------------------
+   Focus ring — larger for 10-foot viewing
+   ------------------------------------------------------------------ */
+html.tv :focus-visible {
+  outline: 5px solid var(--blue-bright);
+  outline-offset: 5px;
+  box-shadow: 0 0 0 9px rgba(61, 106, 255, 0.25);
+}
+
+/* ------------------------------------------------------------------
+   Body padding for TV safe area
+   ------------------------------------------------------------------ */
+html.tv body {
+  padding: 0 2.5%;
+}
+
+/* ------------------------------------------------------------------
+   Brand logo
+   ------------------------------------------------------------------ */
+html.tv .brand-logo {
+  height: 3.4em;
+}
+
+/* ------------------------------------------------------------------
+   Top bar
+   ------------------------------------------------------------------ */
+html.tv .topbar-inner {
+  padding: 0 calc(var(--safe) * 1.5);
+}
+
+/* ------------------------------------------------------------------
+   Navigation
+   ------------------------------------------------------------------ */
+html.tv .nav {
+  font-size: var(--fs-1);
+  gap: var(--sp-7);
+}
+
+/* ------------------------------------------------------------------
+   Buttons — larger hit targets
+   ------------------------------------------------------------------ */
+html.tv .btn {
+  min-height: 64px;
+  padding: 1em 1.8em;
+}
+
+/* ------------------------------------------------------------------
+   Row tracks — wider columns & larger gaps
+   ------------------------------------------------------------------ */
+html.tv .row-track {
+  grid-auto-columns: clamp(280px, 18vw, 360px);
+  gap: var(--sp-4);
+}
+
+html.tv .row-posters .row-track {
+  grid-auto-columns: clamp(220px, 14vw, 280px);
+}
+
+/* ------------------------------------------------------------------
+   Tiles — bigger scale on hover for 10-foot
+   ------------------------------------------------------------------ */
+html.tv .tile:hover,
+html.tv .tile:focus-visible {
+  transform: scale(1.08);
+}
+
+/* ------------------------------------------------------------------
+   Poster grid (Browse page)
+   ------------------------------------------------------------------ */
+html.tv .poster-grid {
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--sp-5);
+}
