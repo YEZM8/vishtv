@@ -1,0 +1,58 @@
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: calc(var(--sp-8) + 60px) var(--safe) var(--sp-8);
+  text-align: center;
+}
+
+.icon {
+  font-size: 4rem;
+  margin-bottom: var(--sp-4);
+}
+
+.title {
+  font-size: var(--fs-4);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 var(--sp-3);
+}
+
+.subtitle {
+  font-size: var(--fs-1);
+  color: var(--text-muted);
+  margin: 0 0 var(--sp-6);
+  line-height: 1.5;
+}
+
+.player {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-6);
+}
+
+.playerLabel {
+  font-size: var(--fs-0);
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--sp-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+}
+
+.player audio {
+  width: 100%;
+  border-radius: var(--r-md);
+}
+
+.offline {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: var(--sp-7);
+  color: var(--text-muted);
+  font-size: var(--fs-1);
+}

@@ -1,0 +1,72 @@
+.header {
+  padding: calc(var(--sp-7) + 60px) var(--safe) var(--sp-5);
+}
+
+.heading {
+  font-size: var(--fs-4);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--sp-5);
+  padding: 0 var(--safe) var(--sp-7);
+}
+
+.card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.cardImage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-3);
+  overflow: hidden;
+}
+
+.cardBody {
+  padding: var(--sp-4);
+}
+
+.cardDate {
+  font-size: var(--fs--1);
+  font-weight: 700;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--sp-2);
+}
+
+.cardTitle {
+  font-size: var(--fs-2);
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 var(--sp-3);
+}
+
+.cardDescription {
+  font-size: var(--fs-0);
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0 0 var(--sp-4);
+}
+
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--sp-8) 0;
+  color: var(--text-muted);
+  font-size: var(--fs-1);
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
