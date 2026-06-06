@@ -79,7 +79,7 @@ export const watchPageQuery = `*[_type == "video" && youtubeId == $videoId][0] {
   }
 }`;
 
-/** Browse page: all programmes with categories */
+/** Browse page: all programmes with categories + flat video list */
 export const browsePageQuery = `{
   "programmes": *[_type == "programme" && isActive == true] | order(title asc) {
     _id,
@@ -89,14 +89,25 @@ export const browsePageQuery = `{
     thumbnail,
     description,
     "categoryTitle": category->title,
-    "categorySlug": category->slug.current
+    "categorySlug": category->slug.current,
+    "videoCount": count(*[_type == "video" && programme._ref == ^._id]),
+    "sampleVideoId": *[_type == "video" && programme._ref == ^._id] | order(publishedAt desc)[0].youtubeId
   },
   "categories": *[_type == "category"] | order(order asc) {
     _id,
     title,
     "slug": slug.current,
     icon
-  }
+  },
+  "allVideos": *[_type == "video"] | order(publishedAt desc) [0...60] {
+    _id,
+    title,
+    youtubeId,
+    thumbnailUrl,
+    publishedAt,
+    "programmeTitle": programme->title
+  },
+  "totalVideoCount": count(*[_type == "video"])
 }`;
 
 /** News listing page */
