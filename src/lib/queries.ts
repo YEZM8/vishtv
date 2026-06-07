@@ -99,7 +99,7 @@ export const browsePageQuery = `{
     "slug": slug.current,
     icon
   },
-  "allVideos": *[_type == "video"] | order(publishedAt desc) [0...60] {
+  "allVideos": *[_type == "video"] | order(publishedAt desc) [0...2000] {
     _id,
     title,
     youtubeId,
