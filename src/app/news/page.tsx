@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { client, urlFor } from "@/sanity/client";
-import { newsListQuery } from "@/lib/queries";
+import { newsListFilteredQuery, newsCategoriesQuery } from "@/lib/queries";
 import Topbar from "@/components/layout/Topbar";
 import Footer from "@/components/layout/Footer";
 import styles from "./NewsPage.module.css";
@@ -14,8 +14,24 @@ export const metadata: Metadata = {
   description: "Latest news from VishTV — Sri Lankan community news from Australia.",
 };
 
-export default async function NewsPage() {
-  const articles = await client.fetch(newsListQuery, { start: 0, end: 20 });
+interface NewsPageProps {
+  searchParams: Promise<{ category?: string }>;
+}
+
+type NewsCategory = { title: string; slug: string; count: number };
+
+export default async function NewsPage({ searchParams }: NewsPageProps) {
+  const { category } = await searchParams;
+  const activeCategory = category || null;
+
+  const [articles, categories] = await Promise.all([
+    client.fetch(newsListFilteredQuery, {
+      category: activeCategory,
+      start: 0,
+      end: 30,
+    }),
+    client.fetch(newsCategoriesQuery),
+  ]);
 
   return (
     <>
@@ -25,6 +41,24 @@ export default async function NewsPage() {
         <div className={styles.header}>
           <h1 className={styles.heading}>News</h1>
         </div>
+
+        {categories && categories.length > 0 && (
+          <nav className={styles.filterBar} aria-label="Filter news by category">
+            <Link href="/news" className="chip" aria-pressed={!activeCategory}>
+              All
+            </Link>
+            {categories.map((cat: NewsCategory) => (
+              <Link
+                key={cat.slug}
+                href={`/news?category=${encodeURIComponent(cat.slug)}`}
+                className="chip"
+                aria-pressed={activeCategory === cat.slug}
+              >
+                {cat.title}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         <div className={styles.grid}>
           {articles && articles.length > 0 ? (
@@ -76,7 +110,7 @@ export default async function NewsPage() {
               )
             )
           ) : (
-            <p className={styles.empty}>No articles yet. Check back soon.</p>
+            <p className={styles.empty}>No articles in this category yet.</p>
           )}
         </div>
       </main>

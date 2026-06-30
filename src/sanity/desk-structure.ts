@@ -42,6 +42,16 @@ export const structure: StructureResolver = (S) =>
         .icon(() => '🏷️')
         .child(S.documentTypeList('category').title('Content Categories')),
 
+      // Contact form submissions
+      S.listItem()
+        .title('Messages')
+        .icon(() => '✉️')
+        .child(
+          S.documentTypeList('contactMessage')
+            .title('Contact Messages')
+            .defaultOrdering([{ field: 'submittedAt', direction: 'desc' }])
+        ),
+
       // Site Settings — opens as a singleton (no list, directly opens the document)
       S.listItem()
         .title('Site Settings')

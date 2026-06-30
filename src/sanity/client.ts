@@ -1,18 +1,28 @@
+import 'server-only'
 import { createClient } from 'next-sanity'
-import { createImageUrlBuilder } from '@sanity/image-url'
 import { projectId, dataset, apiVersion } from './env'
 
+// Re-export the client-safe image builder so existing server-component imports keep working.
+// Client Components must import urlFor from '@/sanity/image' instead (this module is server-only).
+export { urlFor } from './image'
+
 const isConfigured = projectId && projectId !== 'placeholder' && /^[a-z0-9-]+$/.test(projectId)
+
+// Server-only read token. Prefer a dedicated read token; fall back to the existing API token.
+// The dataset is private, so reads must be authenticated. This module never reaches the browser.
+const token = process.env.SANITY_API_READ_TOKEN || process.env.SANITY_API_TOKEN
 
 const rawClient = createClient({
   projectId: isConfigured ? projectId : 'not-configured',
   dataset,
   apiVersion,
-  useCdn: true,
+  // Tokenized reads bypass the CDN; ISR (revalidate) already caches pages, so this is fine.
+  useCdn: false,
+  token,
 })
 
 /**
- * Sanity client with timeout protection.
+ * Sanity read client with timeout protection.
  * Returns null for queries when Sanity is not configured (placeholder project ID).
  */
 export const client = {
@@ -35,11 +45,4 @@ export const client = {
       clearTimeout(timeout)
     }
   },
-}
-
-const builder = createImageUrlBuilder(rawClient)
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function urlFor(source: any) {
-  return builder.image(source)
 }

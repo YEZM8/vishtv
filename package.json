@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate:wix": "node scripts/migrate-wix/migrate.mjs"
   },
   "dependencies": {
     "@portabletext/react": "^6.2.0",
@@ -18,7 +19,8 @@
     "next-sanity": "^12.4.5",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "sanity": "^5.26.0"
+    "sanity": "^5.26.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",
