@@ -2,6 +2,19 @@
 
 ## Pre-Launch
 
+### CMS / Sanity Plan (decided)
+- **Decision:** Sanity is the CMS (already embedded at `/studio`). **Launch on the FREE tier.**
+  - Content fits comfortably: ~1,900 docs vs 10,000 cap; images ~1–3 GB vs 100 GB; YouTube
+    embeds cost zero storage. API/bandwidth well within free limits.
+  - Free tier caveats: only **Admin + Viewer** roles (no granular Contributor/Editor), and the
+    dataset is **public** (published content anonymously queryable — fine for a public news site).
+- [ ] Add each content manager as an **Admin** seat in the Sanity project (Free tier has no
+      lesser write role; team must be trusted).
+- **Upgrade trigger → Growth ($15/seat/mo):** when you need role separation (contributors who
+  aren't full Admins), an approval/publish workflow, a private dataset, or you approach the
+  100 GB/mo bandwidth ceiling. No migration needed — it's a billing flip on the same project.
+- [ ] (Phase 2) Budget ~$15–75/mo Growth line item for when the editorial team formalizes.
+
 ### Environment & Config
 - [ ] Set all environment variables in Vercel dashboard:
   - `NEXT_PUBLIC_SANITY_PROJECT_ID`

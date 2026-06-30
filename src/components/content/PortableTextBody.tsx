@@ -2,7 +2,7 @@
 
 import { PortableText } from "@portabletext/react";
 import type { PortableTextReactComponents } from "@portabletext/react";
-import { urlFor } from "@/sanity/client";
+import { urlFor } from "@/sanity/image";
 import { getEmbedUrl } from "@/lib/youtube";
 import styles from "./PortableTextBody.module.css";
 

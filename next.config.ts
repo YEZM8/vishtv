@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
       { source: "/all-news", destination: "/news", permanent: true },
       { source: "/teledrama", destination: "/browse", permanent: true },
       { source: "/movies", destination: "/browse", permanent: true },
+      { source: "/event-list", destination: "/events", permanent: true },
+      { source: "/privacy-policy", destination: "/privacy", permanent: true },
+      // Wix blog posts: /post/<slug> → /news/<slug>. Migrated slugs match the old Wix
+      // slugs, preserving SEO equity for the ~2,481 indexed article URLs.
+      { source: "/post/:slug", destination: "/news/:slug", permanent: true },
       // Domain redirect: vishvavahini.com → vishtv.com (all paths)
       {
         source: "/:path*",

@@ -5,6 +5,7 @@ import { category } from './category'
 import { event } from './event'
 import { schedule } from './schedule'
 import { siteSettings } from './siteSettings'
+import { contactMessage } from './contactMessage'
 import { youtubeEmbed } from './youtube-embed'
 
 export const schemaTypes = [
@@ -16,6 +17,7 @@ export const schemaTypes = [
   event,
   schedule,
   siteSettings,
+  contactMessage,
 
   // Object types (used inside other schemas)
   youtubeEmbed,
