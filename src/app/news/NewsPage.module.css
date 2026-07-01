@@ -9,6 +9,14 @@
   margin: 0;
 }
 
+/* Category filter bar (uses the global .chip component for the pills) */
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  padding: 0 var(--safe) var(--sp-5);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

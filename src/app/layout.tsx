@@ -3,7 +3,10 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import LanguageProvider from "@/i18n/LanguageProvider";
 import TVModeProvider from "@/components/tv/TVModeProvider";
+import { isIndexable } from "@/lib/seo";
 import "./globals.css";
+
+const indexable = isIndexable();
 
 export const metadata: Metadata = {
   title: {
@@ -12,6 +15,8 @@ export const metadata: Metadata = {
   },
   description:
     "Live news, drama, music and sport from the Sri Lankan diaspora in Australia.",
+  // Site-wide noindex until ALLOW_INDEXING is turned on at cutover (soft-launch protection).
+  robots: { index: indexable, follow: indexable },
   openGraph: {
     type: "website",
     locale: "en_AU",

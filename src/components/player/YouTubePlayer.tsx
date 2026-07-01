@@ -4,7 +4,7 @@ import { getEmbedUrl } from "@/lib/youtube";
 import styles from "./YouTubePlayer.module.css";
 
 interface YouTubePlayerProps {
-  videoId: string;
+  videoId?: string;
   autoplay?: boolean;
   isLive?: boolean;
   title?: string;
@@ -16,11 +16,15 @@ export default function YouTubePlayer({
   isLive = false,
   title = "VishTV video player",
 }: YouTubePlayerProps) {
+  // Guard against an empty embed (renders nothing rather than a broken /embed/ iframe).
+  if (!videoId) return null;
+  const src = getEmbedUrl(videoId, autoplay);
+
   return (
     <div className={styles.wrapper}>
       <iframe
         className={styles.iframe}
-        src={getEmbedUrl(videoId, autoplay)}
+        src={src}
         title={title}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen

@@ -2,6 +2,19 @@
 
 ## Pre-Launch
 
+### CMS / Sanity Plan (decided)
+- **Decision:** Sanity is the CMS (already embedded at `/studio`). **Launch on the FREE tier.**
+  - Content fits comfortably: ~1,900 docs vs 10,000 cap; images ~1–3 GB vs 100 GB; YouTube
+    embeds cost zero storage. API/bandwidth well within free limits.
+  - Free tier caveats: only **Admin + Viewer** roles (no granular Contributor/Editor), and the
+    dataset is **public** (published content anonymously queryable — fine for a public news site).
+- [ ] Add each content manager as an **Admin** seat in the Sanity project (Free tier has no
+      lesser write role; team must be trusted).
+- **Upgrade trigger → Growth ($15/seat/mo):** when you need role separation (contributors who
+  aren't full Admins), an approval/publish workflow, a private dataset, or you approach the
+  100 GB/mo bandwidth ceiling. No migration needed — it's a billing flip on the same project.
+- [ ] (Phase 2) Budget ~$15–75/mo Growth line item for when the editorial team formalizes.
+
 ### Environment & Config
 - [ ] Set all environment variables in Vercel dashboard:
   - `NEXT_PUBLIC_SANITY_PROJECT_ID`
@@ -36,19 +49,32 @@
 
 ---
 
-## DNS Cutover
+## DNS Cutover & Wix Migration
 
-### vishtv.com (Primary Domain)
-1. In your domain registrar, point DNS to Vercel:
-   - `A` record → `76.76.21.21`
-   - `CNAME` for `www` → `cname.vercel-dns.com`
-2. In Vercel dashboard: Add `vishtv.com` as custom domain
-3. Vercel will auto-provision SSL certificate
+> Full strategy, risks, and runbook: **`docs/MIGRATION-CUTOVER.md`**
+> (PDF: `docs/Vishvavahini-Migration-Cutover-Plan.pdf`).
 
-### vishvavahini.com (Redirect)
-1. Point DNS to Vercel (same A/CNAME records)
-2. In Vercel dashboard: Add `vishvavahini.com` as alias
-3. Next.js config already handles 301 redirects to `vishtv.com`
+**Key idea:** the cutover is a **DNS move**. `vishvavahini.com` currently points to Wix; the
+coded 301 redirects only fire once its DNS points to Vercel.
+
+### vishtv.com (primary domain)
+1. Point DNS to Vercel: `A @ → 76.76.21.21`, `CNAME www → cname.vercel-dns.com`
+2. Add `vishtv.com` as a custom domain in Vercel; SSL auto-provisions.
+
+### vishvavahini.com → vishtv.com (cutover)
+1. **Prereq:** vishtv.com live + SSL; redirects verified; lower TTL on vishvavahini.com to 300s.
+2. Add `vishvavahini.com` + `www.vishvavahini.com` as domains on the Vercel project.
+3. Repoint vishvavahini.com DNS to Vercel (same A/CNAME as above) — removes the Wix pointing.
+4. Verify: `www.vishvavahini.com/post/<slug>` → 301 → `vishtv.com/news/<slug>` (one hop).
+5. Google Search Console: verify both properties → run **Change of Address** (old → new);
+   submit `vishtv.com/sitemap.xml`. Keep 301s in place indefinitely.
+
+### ⚠️ Before taking Wix down
+- [ ] **Confirm domain registrar** — if `vishvavahini.com` is registered *through Wix*, secure the
+      domain (transfer out or keep domain-only) BEFORE cancelling, or you can lose it.
+- [ ] **Back up unmigrated Wix data** — member accounts, comments, likes, form submissions
+      (articles + videos are already migrated; the rest is not).
+- [ ] Keep Wix **dormant 30–90 days** as rollback; then downgrade/cancel once GSC settles.
 
 ---
 

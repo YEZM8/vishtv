@@ -66,7 +66,7 @@ export default function Topbar({ transparent = false }: TopbarProps) {
           </nav>
 
           <div className="utility">
-            <button className="icon-btn" aria-label="Search">
+            <Link className="icon-btn" href="/search" aria-label="Search">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -76,7 +76,7 @@ export default function Topbar({ transparent = false }: TopbarProps) {
                 <circle cx="11" cy="11" r="7" />
                 <path d="m20 20-3.5-3.5" />
               </svg>
-            </button>
+            </Link>
 
             <button
               className="lang-toggle"

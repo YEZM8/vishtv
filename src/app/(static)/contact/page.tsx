@@ -3,6 +3,7 @@ import { client } from "@/sanity/client";
 import { siteSettingsQuery } from "@/lib/queries";
 import Topbar from "@/components/layout/Topbar";
 import Footer from "@/components/layout/Footer";
+import ContactForm from "./ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -122,6 +123,9 @@ export default async function ContactPage() {
               </div>
             )}
           </div>
+
+          {/* Contact form — submissions saved to Sanity (Studio → Messages) */}
+          <ContactForm />
 
           {/* Fallback if no settings */}
           {!email && !phone && (

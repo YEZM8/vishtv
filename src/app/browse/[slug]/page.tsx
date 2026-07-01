@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { client, urlFor } from "@/sanity/client";
 import { programmeQuery } from "@/lib/queries";
+import { decodeSlug } from "@/lib/slug";
 import Topbar from "@/components/layout/Topbar";
 import Footer from "@/components/layout/Footer";
 import TileWide from "@/components/rows/TileWide";
@@ -12,8 +13,8 @@ interface ProgrammePageProps {
 }
 
 export async function generateMetadata({ params }: ProgrammePageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const programme = await client.fetch(programmeQuery, { slug });
+  const { slug: rawSlug } = await params;
+  const programme = await client.fetch(programmeQuery, { slug: decodeSlug(rawSlug) });
 
   if (!programme) return { title: "Programme not found" };
 
@@ -24,8 +25,8 @@ export async function generateMetadata({ params }: ProgrammePageProps): Promise<
 }
 
 export default async function ProgrammePage({ params }: ProgrammePageProps) {
-  const { slug } = await params;
-  const programme = await client.fetch(programmeQuery, { slug });
+  const { slug: rawSlug } = await params;
+  const programme = await client.fetch(programmeQuery, { slug: decodeSlug(rawSlug) });
 
   if (!programme) {
     return (
