@@ -53,6 +53,18 @@ export const homePageQuery = `{
       isLive,
       "programmeTitle": programme->title
     }
+  },
+  "trendingVideos": *[_type == "video" && weeklyViews > 0] | order(weeklyViews desc) [0...12] {
+    _id, title, youtubeId, thumbnailUrl, weeklyViews, "programmeTitle": programme->title
+  },
+  "topVideos": *[_type == "video" && viewCount > 0] | order(viewCount desc) [0...12] {
+    _id, title, youtubeId, thumbnailUrl, viewCount, "programmeTitle": programme->title
+  },
+  "trendingNews": *[_type == "article" && weeklyViews > 0] | order(weeklyViews desc) [0...8] {
+    _id, title, "slug": slug.current, featuredImage, publishedAt, weeklyViews, "categoryTitle": category->title
+  },
+  "topNews": *[_type == "article" && viewCount > 0] | order(viewCount desc) [0...8] {
+    _id, title, "slug": slug.current, featuredImage, publishedAt, viewCount, "categoryTitle": category->title
   }
 }`;
 

@@ -88,6 +88,31 @@ videos + 16 programmes from development → production via `scripts/migrate-wix/
 **ACTION (Vercel): set Preview `NEXT_PUBLIC_SANITY_DATASET` = `production`** (was `development`),
 then redeploy dev. Production env var already = `production`.
 
+## Home trending + tile images (DONE — verified locally)
+- [x] Tile images: newsroom tiles render `featuredImage`; trending/most-watched show video
+      thumbnails. Verified: 0 gradient-fallback tiles on home.
+- [x] Video popularity: added `viewCount`/`weeklyViews`/`viewSnapshots` to schema; backfilled
+      990 videos' view counts (`backfill-viewcounts.mjs`). "Most watched" ranks by all-time views.
+- [x] News popularity: `/api/track-view` + `TrackView` beacon increment `article.viewCount`;
+      "Most read" row appears once views accrue.
+- [x] Weekly: `/api/refresh-stats` cron (daily 04:00) snapshots view counts + computes
+      `weeklyViews` (7-day delta) for videos and articles. Registered in vercel.json.
+- [x] Home rows: Trending this week (weekly→recent fallback), Most watched (all-time),
+      From the newsroom (weekly→recent, images), Most read (all-time, hidden until data).
+- Note: weeklyViews = 0 until ~7 days of cron snapshots exist; news views accrue from launch.
+
+## Home trending + tile images (spec)
+Goal: real popularity ranking + framed images in Trending/newsroom tiles.
+- Tiles: newsroom tiles render article `featuredImage`; trending shows videos (YouTube thumbs).
+- Videos: `viewCount` (all-time, from YouTube statistics — already fetched in youtube.ts) +
+  `weeklyViews` (7-day delta from self-tracked `viewSnapshots`). Backfill 991 viewCounts once.
+- News: build view tracking — `/api/track-view` increments `article.viewCount`; daily snapshots →
+  `weeklyViews`. Rank trending (weekly) + all-time (total).
+- Cron `/api/refresh-stats` (daily): refresh video viewCounts, append snapshots (videos+articles),
+  recompute `weeklyViews`.
+- Constraints noted: YouTube public API = all-time only (weekly via snapshots, builds from now);
+  each article view = 1 Sanity write (watch free-tier 250k/mo API cap).
+
 ## Integration plan (prioritized)
 
 ### Phase 0 — Critical path: content migration (BLOCKER for launch)

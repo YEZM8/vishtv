@@ -146,6 +146,33 @@ export async function getChannelVideos(maxResults = 20): Promise<YouTubeVideo[]>
   );
 }
 
+/**
+ * Fetch current view counts for many videos at once.
+ * Returns Map<youtubeId, viewCount>. Batches into groups of 50 (YouTube API limit).
+ */
+export async function getVideosStatistics(
+  videoIds: string[]
+): Promise<Map<string, number>> {
+  const result = new Map<string, number>();
+  if (!API_KEY || videoIds.length === 0) return result;
+
+  for (let i = 0; i < videoIds.length; i += 50) {
+    const batch = videoIds.slice(i, i + 50);
+    const params = new URLSearchParams({
+      part: "statistics",
+      id: batch.join(","),
+      key: API_KEY,
+    });
+    const res = await fetch(`${API_BASE}/videos?${params}`);
+    if (!res.ok) continue;
+    const data = await res.json();
+    for (const item of data.items || []) {
+      result.set(item.id, Number(item.statistics?.viewCount) || 0);
+    }
+  }
+  return result;
+}
+
 /** Check if the channel is currently live streaming */
 export async function getLiveStreamStatus(): Promise<{
   isLive: boolean;

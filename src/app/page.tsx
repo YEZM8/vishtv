@@ -28,12 +28,23 @@ export default async function HomePage() {
   const featuredVideos = data?.featuredVideos || [];
   const recentVideos = data?.recentVideos || [];
   const recentNews = data?.recentNews || [];
-  const programmes = data?.programmes || [];
   const schedule = data?.schedule?.slots || [];
+  const trendingVideos = data?.trendingVideos || [];
+  const topVideos = data?.topVideos || [];
+  const trendingNews = data?.trendingNews || [];
+  const topNews = data?.topNews || [];
+
+  // Trending row: real weekly views if available, else fall back to most recent.
+  const trendingVideoList = trendingVideos.length > 0 ? trendingVideos : recentVideos;
+  // Newsroom row: weekly-trending news if available, else most recent.
+  const newsroomList = trendingNews.length > 0 ? trendingNews : recentNews;
+
+  const newsImg = (n: { featuredImage?: { asset: { _ref: string } } }) =>
+    n.featuredImage?.asset
+      ? urlFor(n.featuredImage).width(600).height(340).url()
+      : undefined;
 
   const hasSanityData = featuredVideos.length > 0 || recentVideos.length > 0;
-  const hasProgrammes = programmes.length > 0;
-  const hasNews = recentNews.length > 0;
   const hasSchedule = schedule.length > 0;
 
   // Live stream video from catalog
@@ -43,15 +54,6 @@ export default async function HomePage() {
   const catalogFeatured = videoCatalog.filter((v) => v.programme !== "Live Stream").slice(0, 6);
   const catalogTalkShow = getVideosByProgramme("යාරා තීරය");
   const catalogMore = videoCatalog.filter((v) => v.programme !== "Live Stream" && v.programme !== "යාරා තීරය").slice(0, 8);
-
-  // Unique programmes for trending section
-  const uniqueProgrammes = [
-    { name: "යාරා තීරය", category: "Talk Show", videoId: "htcFVMsLbJk" },
-    { name: "Dr.Erosha", category: "Health & Wellness", videoId: "pOEdsSQ65A4" },
-    { name: "Community Connect", category: "Current Affairs", videoId: "Z9blDjQPR3k" },
-    { name: "Sporting Live", category: "Sport", videoId: "ogp8DyhBmr4" },
-    { name: "Me and My Business", category: "Business", videoId: "TZL1on78kkQ" },
-  ];
 
   const FALLBACK_SCHEDULE = [
     { time: "6:00 pm", title: "ප්‍රජා සම්බන්ධතා", isLive: false },
@@ -203,38 +205,62 @@ export default async function HomePage() {
           </ContentRow>
         )}
 
-        {/* Trending This Week — using real YouTube thumbnails */}
-        <ContentRow title="Trending this week" moreHref="/browse" variant="posters">
-          {hasProgrammes
-            ? programmes.slice(0, 8).map((p: { _id: string; title: string; slug: string; poster?: { asset: { _ref: string } }; categoryTitle?: string }, i: number) => (
-                <TilePoster
-                  key={p._id}
-                  title={p.title}
-                  subtitle={p.categoryTitle}
-                  eyebrow={`Trending #${i + 1}`}
-                  imageSrc={p.poster?.asset ? urlFor(p.poster).width(300).height(450).url() : undefined}
-                  href={`/browse/${p.slug}`}
-                />
-              ))
-            : uniqueProgrammes.map((p, i) => (
-                <TilePoster
-                  key={p.name}
-                  title={p.name}
-                  subtitle={p.category}
-                  eyebrow={`Trending #${i + 1}`}
-                  imageSrc={getThumbnailUrl(p.videoId, "high")}
-                  href="/browse"
-                />
-              ))}
-        </ContentRow>
+        {/* Trending This Week — most-viewed videos (weekly), real thumbnails */}
+        {trendingVideoList.length > 0 && (
+          <ContentRow title="Trending this week" moreHref="/browse" variant="posters">
+            {trendingVideoList.slice(0, 8).map((v: { _id: string; title: string; youtubeId: string; thumbnailUrl?: string; programmeTitle?: string }, i: number) => (
+              <TilePoster
+                key={v._id}
+                title={v.title}
+                subtitle={v.programmeTitle}
+                eyebrow={`Trending #${i + 1}`}
+                imageSrc={v.thumbnailUrl || getThumbnailUrl(v.youtubeId, "high")}
+                href={`/watch/${v.youtubeId}`}
+              />
+            ))}
+          </ContentRow>
+        )}
 
-        {/* From the Newsroom */}
-        {hasNews && (
+        {/* Most Watched — all-time view count */}
+        {topVideos.length > 0 && (
+          <ContentRow title="Most watched" moreHref="/browse" variant="wide">
+            {topVideos.slice(0, 10).map((v: { _id: string; title: string; youtubeId: string; thumbnailUrl?: string; programmeTitle?: string }) => (
+              <TileWide
+                key={v._id}
+                title={v.title}
+                youtubeId={v.youtubeId}
+                thumbnailUrl={v.thumbnailUrl}
+                eyebrow={v.programmeTitle}
+                href={`/watch/${v.youtubeId}`}
+              />
+            ))}
+          </ContentRow>
+        )}
+
+        {/* From the Newsroom — trending news (weekly) with images, else latest */}
+        {newsroomList.length > 0 && (
           <ContentRow title="From the newsroom" moreHref="/news">
-            {recentNews.map((n: { _id: string; title: string; slug: string; categoryTitle?: string; publishedAt?: string }) => (
+            {newsroomList.map((n: { _id: string; title: string; slug: string; featuredImage?: { asset: { _ref: string } }; categoryTitle?: string; publishedAt?: string }) => (
               <TileWide
                 key={n._id}
                 title={n.title}
+                thumbnailUrl={newsImg(n)}
+                eyebrow={n.categoryTitle}
+                subtitle={n.publishedAt ? timeAgo(n.publishedAt) : undefined}
+                href={`/news/${n.slug}`}
+              />
+            ))}
+          </ContentRow>
+        )}
+
+        {/* Most Read — all-time most-visited articles (appears once views accrue) */}
+        {topNews.length > 0 && (
+          <ContentRow title="Most read" moreHref="/news">
+            {topNews.map((n: { _id: string; title: string; slug: string; featuredImage?: { asset: { _ref: string } }; categoryTitle?: string; publishedAt?: string }) => (
+              <TileWide
+                key={n._id}
+                title={n.title}
+                thumbnailUrl={newsImg(n)}
                 eyebrow={n.categoryTitle}
                 subtitle={n.publishedAt ? timeAgo(n.publishedAt) : undefined}
                 href={`/news/${n.slug}`}

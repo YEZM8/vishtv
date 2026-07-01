@@ -132,12 +132,54 @@ export const article = defineType({
       },
       initialValue: 'en',
     }),
+    defineField({
+      name: 'viewCount',
+      title: 'View Count (all-time)',
+      type: 'number',
+      description: 'Total page views — tracked automatically.',
+      readOnly: true,
+      initialValue: 0,
+    }),
+    defineField({
+      name: 'weeklyViews',
+      title: 'Views (last 7 days)',
+      type: 'number',
+      description: 'Views gained in the last 7 days — computed automatically.',
+      readOnly: true,
+      initialValue: 0,
+    }),
+    defineField({
+      name: 'viewSnapshots',
+      title: 'View Snapshots',
+      type: 'array',
+      description: 'Rolling view-count history used to compute weekly views.',
+      hidden: true,
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'date', type: 'datetime', title: 'Date' },
+            { name: 'count', type: 'number', title: 'Count' },
+          ],
+        },
+      ],
+    }),
   ],
   orderings: [
     {
       title: 'Published Date, New',
       name: 'publishedAtDesc',
       by: [{ field: 'publishedAt', direction: 'desc' }],
+    },
+    {
+      title: 'Most Read (all-time)',
+      name: 'viewCountDesc',
+      by: [{ field: 'viewCount', direction: 'desc' }],
+    },
+    {
+      title: 'Trending (last 7 days)',
+      name: 'weeklyViewsDesc',
+      by: [{ field: 'weeklyViews', direction: 'desc' }],
     },
   ],
   preview: {

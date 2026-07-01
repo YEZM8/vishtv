@@ -7,6 +7,7 @@ import { decodeSlug } from "@/lib/slug";
 import Topbar from "@/components/layout/Topbar";
 import Footer from "@/components/layout/Footer";
 import PortableTextBody from "@/components/content/PortableTextBody";
+import TrackView from "@/components/content/TrackView";
 import styles from "./ArticlePage.module.css";
 
 interface ArticlePageProps {
@@ -78,6 +79,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       <Topbar />
 
       <main id="main-content">
+        <TrackView id={article._id} />
         {article.featuredImage?.asset && (
           <div className={styles.hero}>
             <Image
