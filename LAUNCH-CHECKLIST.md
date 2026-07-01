@@ -1,13 +1,20 @@
 # VishTV Launch Checklist
 
+> **STATUS (1 Jul 2026): SOFT-LAUNCHED.** `vishtv.com` is LIVE with full content, **non-indexed**
+> (`ALLOW_INDEXING` off), running parallel to the Wix site. Remaining: bake → cutover (indexing on +
+> `vishvavahini.com` DNS repoint) → decommission Wix. See `docs/MIGRATION-CUTOVER.md`.
+
 ## Pre-Launch
 
 ### CMS / Sanity Plan (decided)
 - **Decision:** Sanity is the CMS (already embedded at `/studio`). **Launch on the FREE tier.**
   - Content fits comfortably: ~1,900 docs vs 10,000 cap; images ~1–3 GB vs 100 GB; YouTube
     embeds cost zero storage. API/bandwidth well within free limits.
-  - Free tier caveats: only **Admin + Viewer** roles (no granular Contributor/Editor), and the
-    dataset is **public** (published content anonymously queryable — fine for a public news site).
+  - Free tier caveats: only **Admin + Viewer** roles (no granular Contributor/Editor).
+  - **Note:** the dataset is currently **PRIVATE** (reads require `SANITY_API_READ_TOKEN`). This is
+    a Growth-tier feature — on the Growth **trial** now. If it reverts to Free, private datasets
+    aren't supported (would become public, or subscribe to Growth to keep private). Decide before
+    the trial ends. Either way the site keeps working (the read token works on public or private).
 - [ ] Add each content manager as an **Admin** seat in the Sanity project (Free tier has no
       lesser write role; team must be trusted).
 - **Upgrade trigger → Growth ($15/seat/mo):** when you need role separation (contributors who
@@ -16,15 +23,17 @@
 - [ ] (Phase 2) Budget ~$15–75/mo Growth line item for when the editorial team formalizes.
 
 ### Environment & Config
-- [ ] Set all environment variables in Vercel dashboard:
-  - `NEXT_PUBLIC_SANITY_PROJECT_ID`
-  - `NEXT_PUBLIC_SANITY_DATASET` (production)
-  - `SANITY_API_TOKEN` (write token for sync)
-  - `YOUTUBE_API_KEY`
-  - `YOUTUBE_CHANNEL_ID`
-  - `CRON_SECRET` (random string for cron auth)
-- [ ] Verify Sanity project ID and dataset are correct
+- [x] Set all environment variables in Vercel (**must include Production scope**):
+  - `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET=production`
+  - `SANITY_API_TOKEN` (write token — cron/tracking/contact)
+  - **`SANITY_API_READ_TOKEN` (read token — MUST be scoped to Production; the private dataset can't
+    be read without it. Missing the Production scope = empty site. Redeploy after adding so
+    `NEXT_PUBLIC_*` re-bake.)**
+  - `YOUTUBE_API_KEY`, `YOUTUBE_CHANNEL_ID`, `CRON_SECRET`
+  - `ALLOW_INDEXING` — leave **unset** for the soft launch; set `true` (Production) at cutover.
+- [x] Sanity project ID / dataset verified; production reads content (3,498 sitemap URLs).
 - [ ] Test YouTube API key works (check `/api/sync-youtube`)
+- [ ] Add `vishvavahini.com` to Sanity **CORS** before its cutover (vishtv.com already added).
 
 ### Content
 - [ ] Add at least 3-5 news articles in Sanity

@@ -11,10 +11,20 @@ _Generated: 2026-07-01 · 21 commits · 21 May → 1 July 2026 · 107 files chan
 
 | Environment | URL | Branch | At commit | Contains |
 |---|---|---|---|---|
-| **Production** | vishtv.com | `main` | `cc1d56e` (3 Jun) | Foundation only (v0.1) |
-| **Dev / Staging** | dev.vishtv.com | `dev` | `97d2475` (1 Jul) | Everything through v1.0 |
+| **Production** | vishtv.com | `main` | `4923e94` (1 Jul) | **v1.0 — LIVE (non-indexed soft launch)** |
+| **Dev / Staging** | dev.vishtv.com | `dev` | `5f11485` (1 Jul) | Everything through v1.0 |
+| **Legacy (Wix)** | vishvavahini.com | — | — | Old site, still live in parallel |
 
-The v1.0 relaunch is verified on **dev** and staged for production via **PR #1** (`dev → main`).
+**v1.0 is LIVE in production on `vishtv.com`** (PR #1 merged) as a **non-indexed soft launch**
+(`ALLOW_INDEXING` off → `robots: Disallow /` + `<meta noindex>`), running in parallel with the
+old Wix site. Content verified: 2,481 articles + 991 videos serving; sitemap 3,498 URLs.
+
+**Production env note:** the private Sanity dataset requires `SANITY_API_READ_TOKEN` scoped to
+**Production** (and a redeploy so `NEXT_PUBLIC_*` re-bake). Missing this scope was why production
+first showed no content until fixed.
+
+**Next:** bake period → cutover (`ALLOW_INDEXING=true` + repoint `vishvavahini.com` DNS → 301s +
+GSC Change of Address) → decommission Wix (secure the domain first). See `MIGRATION-CUTOVER.md`.
 
 ---
 
@@ -43,7 +53,7 @@ The initial build: a working Next.js + Sanity site with the core pages and CMS.
 - Content-manager guide + launch checklist; Vercel deploy config; cron set to daily (Hobby plan).
 
 _Commits: d0bab5c, 528f97b, 6baed71, 6c001af, 451e037, ea29aa4, 59b34b6, 1b2e4b8, cc1d56e_
-**→ This is what is currently live on production (vishtv.com).**
+**→ Was the production baseline until v1.0 shipped (1 Jul).**
 
 ---
 

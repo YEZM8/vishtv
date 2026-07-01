@@ -7,6 +7,18 @@ _Last updated: 2026-07-01_
 
 ---
 
+## 0. Current status (as of 1 Jul 2026)
+
+- ✅ **`vishtv.com` is LIVE** with the full new site (2,481 articles + 991 videos), **non-indexed**
+  (soft launch — `ALLOW_INDEXING` off). DNS for `vishtv.com` now points to Vercel (apex A →
+  `216.198.79.1`, `www` CNAME → Vercel; managed at **Hostinger**).
+- ✅ **`vishvavahini.com` still on Wix**, untouched, serving its audience in parallel.
+- ⏳ **Not yet done:** bake period → cutover (indexing on + DNS repoint) → Wix decommission.
+- ⚠️ **Confirmed:** `vishvavahini.com` uses **Wix nameservers** (`wixdns.net`) — the domain is
+  managed (and likely registered) through Wix. Secure it before decommissioning (see §4).
+
+---
+
 ## 1. The core mechanism — two independent layers
 
 The redirect only works if these two layers are understood as **separate**:
@@ -95,6 +107,11 @@ redirect once confident; then wind Wix down.
    check root, `/all-news`, `/tv-live`, `/teledrama`.
 8. Confirm HTTPS works on the old domain (no cert warnings).
 
+### Phase 2b — Turn indexing on (at cutover, not before)
+8a. Set **`ALLOW_INDEXING=true`** in Vercel (Production env) → **redeploy** production. This flips
+    `robots.txt` to allow crawling and removes the site-wide `<meta noindex>`. Do this only when
+    you're ready for Google to index `vishtv.com` (i.e. at cutover, alongside the DNS repoint).
+
 ### Phase 3 — SEO handoff (promptly after cutover)
 9. **Google Search Console**: verify both `vishvavahini.com` and `vishtv.com` properties, then use
    the **"Change of Address"** tool (old → new). Biggest single accelerator for transferring rankings.
@@ -143,14 +160,17 @@ are the cleanest option and can be enabled in `next.config.ts`.
 
 ## 7. Pre-flight checklist
 
-- [ ] `vishtv.com` live on Vercel with valid SSL
-- [ ] Redirects verified on `vishtv.com`
+- [x] `vishtv.com` live on Vercel with valid SSL (non-indexed soft launch)
+- [x] `vishtv.com` DNS pointed to Vercel (Hostinger: A → 216.198.79.1, www CNAME → Vercel)
+- [x] `SANITY_API_READ_TOKEN` scoped to Production; production reads content
+- [x] Redirects verified (one-hop) for old Wix paths
+- [ ] Bake period on `vishtv.com` (a few days; watch logs, confirm crons)
+- [ ] `ALLOW_INDEXING=true` set + redeploy (turn indexing on — at cutover)
 - [ ] DNS TTL lowered on `vishvavahini.com`
 - [ ] `vishvavahini.com` + `www` added as Vercel domains
-- [ ] **Domain registrar confirmed / domain secured off Wix**
+- [ ] **Domain secured off Wix (it's on Wix nameservers — confirm registrar / transfer out)**
 - [ ] Wix member/comment/form data exported (if needed)
-- [ ] DNS repointed to Vercel
-- [ ] Old→new 301s verified live
-- [ ] GSC Change of Address submitted
-- [ ] Sitemap submitted
-- [ ] Wix kept dormant (rollback window)
+- [ ] `vishvavahini.com` DNS repointed to Vercel (in Wix DNS panel)
+- [ ] Old→new 301s verified live from `vishvavahini.com`
+- [ ] GSC Change of Address submitted + sitemap submitted
+- [ ] Wix kept dormant (rollback window), then decommissioned
