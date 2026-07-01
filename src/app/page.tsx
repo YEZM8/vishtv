@@ -8,7 +8,6 @@ import Topbar from "@/components/layout/Topbar";
 import Hero from "@/components/hero/Hero";
 import ContentRow from "@/components/rows/ContentRow";
 import TileWide from "@/components/rows/TileWide";
-import TilePoster from "@/components/rows/TilePoster";
 import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
@@ -205,16 +204,17 @@ export default async function HomePage() {
           </ContentRow>
         )}
 
-        {/* Trending This Week — most-viewed videos (weekly), real thumbnails */}
+        {/* Trending This Week — most-viewed videos (weekly); 16:9 tiles fit YouTube thumbnails */}
         {trendingVideoList.length > 0 && (
-          <ContentRow title="Trending this week" moreHref="/browse" variant="posters">
+          <ContentRow title="Trending this week" moreHref="/browse" variant="wide">
             {trendingVideoList.slice(0, 8).map((v: { _id: string; title: string; youtubeId: string; thumbnailUrl?: string; programmeTitle?: string }, i: number) => (
-              <TilePoster
+              <TileWide
                 key={v._id}
                 title={v.title}
                 subtitle={v.programmeTitle}
                 eyebrow={`Trending #${i + 1}`}
-                imageSrc={v.thumbnailUrl || getThumbnailUrl(v.youtubeId, "high")}
+                youtubeId={v.youtubeId}
+                thumbnailUrl={v.thumbnailUrl}
                 href={`/watch/${v.youtubeId}`}
               />
             ))}
