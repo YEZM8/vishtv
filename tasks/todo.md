@@ -1,5 +1,10 @@
 # Vishvavahini Relaunch — Live Site Audit & Integration Plan
 
+> **MILESTONE (1 Jul 2026): SOFT-LAUNCHED.** v1.0 is LIVE on `vishtv.com` (PR #1 merged), fully
+> functional and **non-indexed** (soft launch), running parallel to Wix. 2,481 articles + 991
+> videos verified in production. Remaining: bake → cutover (indexing on + `vishvavahini.com` DNS
+> repoint) → decommission Wix. See `docs/MIGRATION-CUTOVER.md` + `docs/DEVELOPMENT-LOG.md`.
+
 Comparison of the live Wix site (vishvavahini.com) vs. the new Next.js + Sanity app (vishtv).
 Goal: integrate **only the required** missing functionality to reach launch parity — not rebuild Wix.
 

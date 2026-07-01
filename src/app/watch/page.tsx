@@ -12,9 +12,9 @@ export const metadata = {
   description: "Watch Vishvavahini TV live — Sri Lankan community television from Australia.",
 };
 
-// Cache the page (and the single YouTube live-status check) for 15 minutes. This keeps the
-// quota-heavy search API to ~96 calls/day while auto-detecting a new live within ~15 min.
-export const revalidate = 900;
+// Revalidate every 2 minutes so a live going on/off air is picked up quickly. Detection uses
+// the cheap uploads scan (~3 quota units), so even frequent checks stay well within quota.
+export const revalidate = 120;
 
 const recentVideosQuery = `*[_type == "video" && defined(youtubeId)] | order(publishedAt desc) [0...12] {
   _id, title, youtubeId, thumbnailUrl, "programmeTitle": programme->title

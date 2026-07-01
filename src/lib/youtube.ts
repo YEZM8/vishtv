@@ -173,42 +173,72 @@ export async function getVideosStatistics(
   return result;
 }
 
-/** Check if the channel is currently live streaming */
+/**
+ * Check if the channel is currently live streaming.
+ *
+ * Uses the channel's recent uploads (videos.list liveStreamingDetails) rather than
+ * search?eventType=live. That endpoint is cheap (~3 quota units vs 100 for search) and far more
+ * reliable — search has significant live-indexing lag and can miss active broadcasts, which is
+ * what caused the "off air" false negative in production.
+ */
 export async function getLiveStreamStatus(): Promise<{
   isLive: boolean;
   videoId: string | null;
   title: string | null;
   viewerCount: number | null;
 }> {
-  if (!API_KEY) return { isLive: false, videoId: null, title: null, viewerCount: null };
+  const offline = { isLive: false, videoId: null, title: null, viewerCount: null };
+  if (!API_KEY) return offline;
 
-  const params = new URLSearchParams({
-    part: "snippet",
-    channelId: CHANNEL_ID,
-    eventType: "live",
-    type: "video",
-    key: API_KEY,
-  });
+  try {
+    // uploads playlist id
+    const chRes = await fetch(
+      `${API_BASE}/channels?${new URLSearchParams({ part: "contentDetails", id: CHANNEL_ID, key: API_KEY })}`
+    );
+    if (!chRes.ok) return offline;
+    const chData = await chRes.json();
+    const uploads =
+      chData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+    if (!uploads) return offline;
 
-  const res = await fetch(`${API_BASE}/search?${params}`);
-  if (!res.ok) return { isLive: false, videoId: null, title: null, viewerCount: null };
+    // most recent uploads (a live broadcast appears here)
+    const plRes = await fetch(
+      `${API_BASE}/playlistItems?${new URLSearchParams({ part: "contentDetails", playlistId: uploads, maxResults: "10", key: API_KEY })}`
+    );
+    if (!plRes.ok) return offline;
+    const plData = await plRes.json();
+    const ids: string = (plData.items || [])
+      .map((i: { contentDetails?: { videoId?: string } }) => i.contentDetails?.videoId)
+      .filter(Boolean)
+      .join(",");
+    if (!ids) return offline;
 
-  const data = await res.json();
-  const liveItem = data.items?.[0];
+    // find one that is currently live
+    const vRes = await fetch(
+      `${API_BASE}/videos?${new URLSearchParams({ part: "snippet,liveStreamingDetails", id: ids, key: API_KEY })}`
+    );
+    if (!vRes.ok) return offline;
+    const vData = await vRes.json();
+    const live = (vData.items || []).find(
+      (v: {
+        snippet?: { liveBroadcastContent?: string };
+        liveStreamingDetails?: { actualStartTime?: string; actualEndTime?: string };
+      }) =>
+        v.snippet?.liveBroadcastContent === "live" ||
+        (v.liveStreamingDetails?.actualStartTime &&
+          !v.liveStreamingDetails?.actualEndTime)
+    );
+    if (!live) return offline;
 
-  if (!liveItem) {
-    return { isLive: false, videoId: null, title: null, viewerCount: null };
+    return {
+      isLive: true,
+      videoId: live.id,
+      title: live.snippet?.title ?? null,
+      viewerCount: Number(live.liveStreamingDetails?.concurrentViewers) || null,
+    };
+  } catch {
+    return offline;
   }
-
-  // Fetch viewer count for the live video
-  const video = await getVideoById(liveItem.id.videoId);
-
-  return {
-    isLive: true,
-    videoId: liveItem.id.videoId,
-    title: liveItem.snippet.title,
-    viewerCount: video?.viewCount || null,
-  };
 }
 
 /** Generate a YouTube thumbnail URL from a video ID */
