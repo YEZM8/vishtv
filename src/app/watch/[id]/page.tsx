@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { client } from "@/sanity/client";
 import { watchPageQuery, siteSettingsQuery } from "@/lib/queries";
+import { decodeSlug } from "@/lib/slug";
 import { getVideoById, getThumbnailUrl } from "@/lib/youtube";
 import { getVideoFromCatalog, getVideosByProgramme } from "@/lib/video-catalog";
 import Topbar from "@/components/layout/Topbar";
@@ -17,7 +18,8 @@ interface WatchPageProps {
 /* ---------- Metadata ---------- */
 
 export async function generateMetadata({ params }: WatchPageProps): Promise<Metadata> {
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const id = decodeSlug(rawId);
   const video = await client.fetch(watchPageQuery, { videoId: id });
   const catalog = getVideoFromCatalog(id);
 
@@ -40,7 +42,8 @@ export async function generateMetadata({ params }: WatchPageProps): Promise<Meta
 /* ---------- Page ---------- */
 
 export default async function WatchPage({ params }: WatchPageProps) {
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const id = decodeSlug(rawId);
 
   // 1. Try Sanity
   const video = await client.fetch(watchPageQuery, { videoId: id });

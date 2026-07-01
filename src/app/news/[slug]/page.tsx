@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { client, urlFor } from "@/sanity/client";
 import { articleQuery } from "@/lib/queries";
+import { decodeSlug } from "@/lib/slug";
 import Topbar from "@/components/layout/Topbar";
 import Footer from "@/components/layout/Footer";
 import PortableTextBody from "@/components/content/PortableTextBody";
@@ -22,8 +23,8 @@ type RelatedArticle = {
 };
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const article = await client.fetch(articleQuery, { slug });
+  const { slug: rawSlug } = await params;
+  const article = await client.fetch(articleQuery, { slug: decodeSlug(rawSlug) });
 
   if (!article) return { title: "Article not found" };
 
@@ -48,7 +49,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeSlug(rawSlug);
   const article = await client.fetch(articleQuery, { slug });
 
   if (!article) {

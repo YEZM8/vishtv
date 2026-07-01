@@ -78,6 +78,16 @@ contributors; current schema stores author as a plain string defaulting to "News
 
 ---
 
+## Dataset consolidation (resolved)
+Two datasets existed: `production` (had the 2,481 migrated articles + 10 categories, 0 videos) and
+`development` (had 991 videos + 16 programmes, 0 articles). dev.vishtv.com (Preview) pointed at
+`development`, so dev showed no articles. **Decision: single `production` dataset.** Copied 991
+videos + 16 programmes from development → production via `scripts/migrate-wix/copy-docs.mjs`
+(preserves _id + refs; 239 video→programme refs intact). production is now complete:
+2,481 articles + 991 videos + 16 programmes + 10 categories.
+**ACTION (Vercel): set Preview `NEXT_PUBLIC_SANITY_DATASET` = `production`** (was `development`),
+then redeploy dev. Production env var already = `production`.
+
 ## Integration plan (prioritized)
 
 ### Phase 0 — Critical path: content migration (BLOCKER for launch)
