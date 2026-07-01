@@ -44,6 +44,36 @@ All are **301 (permanent)** so Google transfers ranking to the new URLs.
 
 ---
 
+## 2a. Sequencing & timing — launch first, then migrate (do NOT do both at once)
+
+The professional approach is **a sequence, not an either/or**: publish `vishtv.com` first and run
+in parallel, then flip the redirect, then decommission Wix.
+
+1. **Launch `vishtv.com` first — Wix untouched (parallel / soft launch).** New site runs under real
+   production conditions with **zero risk** to the old site's traffic or rankings.
+2. **Verify in production for a short, bracketed window** (a few days to ~1 week): content,
+   performance, Vercel logs, crons, `/studio`, live stream, analytics.
+3. **Cutover** — repoint `vishvavahini.com` DNS to Vercel; 301s activate; do GSC Change of Address.
+4. **Keep Wix dormant (30–90 days), then decommission** (after securing domain + backups).
+
+**Why not the two extremes:**
+
+- **Do NOT cut over on launch day.** If a production-only bug surfaces (env, SSL, data), you break
+  the new site *and* the old site's traffic/SEO at once, with a painful rollback. Never migrate
+  traffic to a site you haven't watched run in production.
+- **Do NOT run both in parallel indefinitely.** Two live domains serving the same ~2,481 articles =
+  **duplicate content** — Google splits/erodes rankings and can't tell which is canonical. Parallel
+  is a *bracketed staging phase*, not a permanent state.
+
+**The one caveat during the parallel window:** because `vishtv.com` is indexable, a long overlap
+risks duplicate content. Either keep the window **short** (days — low risk, Google re-crawls slowly),
+or for a **longer** bake, **hold off submitting `vishtv.com` to Google** (no sitemap submission / no
+index request) until cutover so it doesn't compete with the still-ranking old site. Since dev already
+runs on the production dataset, confidence is high — a short window is the pragmatic choice.
+
+**Bottom line:** publish first + run parallel as a short, deliberate verification bridge; flip the
+redirect once confident; then wind Wix down.
+
 ## 3. Cutover runbook
 
 ### Phase 0 — Prerequisites (before touching DNS)
