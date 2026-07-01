@@ -9,23 +9,7 @@
 
 const API_BASE = "https://www.googleapis.com/youtube/v3";
 const API_KEY = process.env.YOUTUBE_API_KEY;
-export const DEFAULT_CHANNEL_ID = "UCeqWSlqqNO2F5zPWq-pQEcA";
-const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || DEFAULT_CHANNEL_ID;
-
-/**
- * Embed URL that always plays the channel's CURRENT live stream.
- * Autonomous: when a new live broadcast starts on the channel, this embed shows it —
- * no API calls, no manual updates. Shows an offline notice when the channel isn't live.
- */
-export function getLiveChannelEmbedUrl(channelId: string, autoplay = true): string {
-  const params = new URLSearchParams({
-    channel: channelId,
-    rel: "0",
-    modestbranding: "1",
-    ...(autoplay ? { autoplay: "1" } : {}),
-  });
-  return `https://www.youtube.com/embed/live_stream?${params}`;
-}
+const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || "UCeqWSlqqNO2F5zPWq-pQEcA";
 
 export interface YouTubeVideo {
   id: string;

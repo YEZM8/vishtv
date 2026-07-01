@@ -16,8 +16,9 @@ const rawClient = createClient({
   projectId: isConfigured ? projectId : 'not-configured',
   dataset,
   apiVersion,
-  // Tokenized reads bypass the CDN; ISR (revalidate) already caches pages, so this is fine.
-  useCdn: false,
+  // Authenticated CDN reads: faster + cheaper (served from Sanity's CDN, ~60s freshness).
+  // Works with a token on a private dataset; ISR revalidation handles staleness.
+  useCdn: true,
   token,
 })
 

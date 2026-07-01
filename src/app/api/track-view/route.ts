@@ -7,6 +7,20 @@ import { writeClient } from "@/sanity/write-client";
  */
 export async function POST(request: Request) {
   try {
+    // Same-origin guard: browsers always send Origin on a POST. Reject cross-origin / origin-less
+    // callers (curl loops, scrapers) so this public write can't be trivially spammed.
+    const origin = request.headers.get("origin");
+    const host = request.headers.get("host");
+    let sameOrigin = false;
+    try {
+      sameOrigin = !!origin && new URL(origin).host === host;
+    } catch {
+      sameOrigin = false;
+    }
+    if (!sameOrigin) {
+      return NextResponse.json({ ok: false }, { status: 200 });
+    }
+
     const { id } = await request.json();
 
     if (typeof id !== "string" || !id.startsWith("article.")) {

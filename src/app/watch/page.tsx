@@ -1,6 +1,6 @@
 import { client } from "@/sanity/client";
 import { siteSettingsQuery } from "@/lib/queries";
-import { DEFAULT_CHANNEL_ID } from "@/lib/youtube";
+import { getLiveStreamStatus } from "@/lib/youtube";
 import Topbar from "@/components/layout/Topbar";
 import Footer from "@/components/layout/Footer";
 import ContentRow from "@/components/rows/ContentRow";
@@ -12,8 +12,9 @@ export const metadata = {
   description: "Watch Vishvavahini TV live — Sri Lankan community television from Australia.",
 };
 
-// The live embed is dynamic; keep the page fresh.
-export const revalidate = 60;
+// Cache the page (and the single YouTube live-status check) for 15 minutes. This keeps the
+// quota-heavy search API to ~96 calls/day while auto-detecting a new live within ~15 min.
+export const revalidate = 900;
 
 const recentVideosQuery = `*[_type == "video" && defined(youtubeId)] | order(publishedAt desc) [0...12] {
   _id, title, youtubeId, thumbnailUrl, "programmeTitle": programme->title
@@ -25,10 +26,13 @@ export default async function WatchLivePage() {
     client.fetch(recentVideosQuery),
   ]);
 
-  // Optional manual override (e.g. a scheduled premiere); otherwise auto-play the channel's
-  // current live stream via the YouTube live_stream embed.
-  const overrideId = settings?.liveStreamVideoId;
-  const channelId = process.env.YOUTUBE_CHANNEL_ID || DEFAULT_CHANNEL_ID;
+  // Manual override (scheduled premiere) wins; otherwise auto-detect the channel's live stream.
+  const overrideId: string | undefined = settings?.liveStreamVideoId;
+  let liveId: string | null = overrideId || null;
+  if (!liveId) {
+    const status = await getLiveStreamStatus();
+    if (status.isLive && status.videoId) liveId = status.videoId;
+  }
 
   const recentVideos: {
     _id: string;
@@ -55,33 +59,45 @@ export default async function WatchLivePage() {
               gap: "var(--sp-3)",
             }}
           >
-            <span className="live-pill">
-              <span className="dot" aria-hidden="true" />
-              LIVE
-            </span>
+            {liveId && (
+              <span className="live-pill">
+                <span className="dot" aria-hidden="true" />
+                LIVE
+              </span>
+            )}
             Vishvavahini TV Live
           </h1>
         </div>
 
         <div style={{ padding: "0 var(--safe)" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <YouTubePlayer
-              {...(overrideId ? { videoId: overrideId } : { liveChannelId: channelId })}
-              autoplay
-              isLive
-              title="Vishvavahini TV Live"
-            />
-            <p
-              style={{
-                color: "var(--text-muted)",
-                fontSize: "var(--fs-0)",
-                lineHeight: 1.6,
-                marginTop: "var(--sp-4)",
-              }}
-            >
-              Watch Vishvavahini TV live — Sri Lankan community television broadcasting from
-              Melbourne to the world. If we&apos;re currently off air, browse our latest videos below.
-            </p>
+            {liveId ? (
+              <>
+                <YouTubePlayer videoId={liveId} autoplay isLive title="Vishvavahini TV Live" />
+                <p style={{ color: "var(--text-muted)", fontSize: "var(--fs-0)", lineHeight: 1.6, marginTop: "var(--sp-4)" }}>
+                  Watch Vishvavahini TV live — Sri Lankan community television broadcasting from
+                  Melbourne to the world.
+                </p>
+              </>
+            ) : (
+              <div
+                style={{
+                  background: "var(--bg-2)",
+                  border: "1px solid var(--line)",
+                  borderRadius: "var(--r-md)",
+                  padding: "var(--sp-8) var(--sp-6)",
+                  textAlign: "center",
+                }}
+              >
+                <h2 style={{ fontSize: "var(--fs-2)", fontWeight: 700, color: "var(--text)", margin: 0 }}>
+                  We&apos;re off air right now
+                </h2>
+                <p style={{ color: "var(--text-muted)", fontSize: "var(--fs-0)", marginTop: "var(--sp-2)" }}>
+                  Our live stream isn&apos;t running at the moment. Catch up on our latest videos below,
+                  or check back soon.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

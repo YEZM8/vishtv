@@ -1,12 +1,10 @@
 "use client";
 
-import { getEmbedUrl, getLiveChannelEmbedUrl } from "@/lib/youtube";
+import { getEmbedUrl } from "@/lib/youtube";
 import styles from "./YouTubePlayer.module.css";
 
 interface YouTubePlayerProps {
   videoId?: string;
-  /** When set, embeds the channel's current live stream instead of a specific video. */
-  liveChannelId?: string;
   autoplay?: boolean;
   isLive?: boolean;
   title?: string;
@@ -14,14 +12,13 @@ interface YouTubePlayerProps {
 
 export default function YouTubePlayer({
   videoId,
-  liveChannelId,
   autoplay = false,
   isLive = false,
   title = "VishTV video player",
 }: YouTubePlayerProps) {
-  const src = liveChannelId
-    ? getLiveChannelEmbedUrl(liveChannelId, autoplay)
-    : getEmbedUrl(videoId || "", autoplay);
+  // Guard against an empty embed (renders nothing rather than a broken /embed/ iframe).
+  if (!videoId) return null;
+  const src = getEmbedUrl(videoId, autoplay);
 
   return (
     <div className={styles.wrapper}>

@@ -88,7 +88,14 @@ videos + 16 programmes from development → production via `scripts/migrate-wix/
 **ACTION (Vercel): set Preview `NEXT_PUBLIC_SANITY_DATASET` = `production`** (was `development`),
 then redeploy dev. Production env var already = `production`.
 
-## Home trending + tile images (DONE — verified locally)
+## Live stream (DONE — verified on dev)
+- [x] `/watch` embeds the YouTube channel live_stream (`embed/live_stream?channel=ID`) —
+      auto-plays the current broadcast, zero quota, zero manual updates. `liveStreamVideoId`
+      kept as optional manual override. Fixed the "recording not available" dead-id bug.
+- Optional later: cached API live-detection for a branded offline state + reliable LIVE badge
+      (quota trade-off) — deferred; channel runs near-continuous stream.
+
+## Home trending + tile images (DONE — verified on dev)
 - [x] Tile images: newsroom tiles render `featuredImage`; trending/most-watched show video
       thumbnails. Verified: 0 gradient-fallback tiles on home.
 - [x] Video popularity: added `viewCount`/`weeklyViews`/`viewSnapshots` to schema; backfilled
