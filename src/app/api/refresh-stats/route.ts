@@ -27,6 +27,18 @@ function weeklyFrom(snapshots: Snapshot[], current: number): number {
   return Math.max(0, current - baseline);
 }
 
+/**
+ * Ranking signal for "Trending this week":
+ *  - real weekly views once we have snapshot history, otherwise
+ *  - view velocity (views per day since publish) as a momentum proxy.
+ */
+function trendingScoreFrom(weekly: number, viewCount: number, publishedAt?: string): number {
+  if (weekly > 0) return weekly;
+  if (!publishedAt) return 0;
+  const ageDays = Math.max(1, (Date.now() - new Date(publishedAt).getTime()) / 86400_000);
+  return Math.round(viewCount / ageDays);
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const secret =
@@ -41,9 +53,14 @@ export async function GET(request: Request) {
 
   try {
     // ---- Videos ----
-    const videos: { _id: string; youtubeId?: string; viewSnapshots?: Snapshot[] }[] =
+    const videos: {
+      _id: string;
+      youtubeId?: string;
+      publishedAt?: string;
+      viewSnapshots?: Snapshot[];
+    }[] =
       (await writeClient.fetch(
-        `*[_type == "video" && defined(youtubeId)]{ _id, youtubeId, viewSnapshots }`
+        `*[_type == "video" && defined(youtubeId)]{ _id, youtubeId, publishedAt, viewSnapshots }`
       )) || [];
 
     const stats = await getVideosStatistics(
@@ -56,8 +73,14 @@ export async function GET(request: Request) {
       const current = stats.get(v.youtubeId!);
       if (current == null) continue; // stat unavailable this run — skip
       const snaps = nextSnapshots(v.viewSnapshots || [], current, now);
+      const weekly = weeklyFrom(snaps, current);
       tx = tx.patch(v._id, {
-        set: { viewCount: current, weeklyViews: weeklyFrom(snaps, current), viewSnapshots: snaps },
+        set: {
+          viewCount: current,
+          weeklyViews: weekly,
+          trendingScore: trendingScoreFrom(weekly, current, v.publishedAt),
+          viewSnapshots: snaps,
+        },
       });
       summary.videos++;
       if (++pending >= 100) {

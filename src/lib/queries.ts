@@ -54,8 +54,8 @@ export const homePageQuery = `{
       "programmeTitle": programme->title
     }
   },
-  "trendingVideos": *[_type == "video" && weeklyViews > 0] | order(weeklyViews desc) [0...12] {
-    _id, title, youtubeId, thumbnailUrl, weeklyViews, "programmeTitle": programme->title
+  "trendingVideos": *[_type == "video" && trendingScore > 0] | order(trendingScore desc) [0...12] {
+    _id, title, youtubeId, thumbnailUrl, trendingScore, weeklyViews, "programmeTitle": programme->title
   },
   "topVideos": *[_type == "video" && viewCount > 0] | order(viewCount desc) [0...12] {
     _id, title, youtubeId, thumbnailUrl, viewCount, "programmeTitle": programme->title

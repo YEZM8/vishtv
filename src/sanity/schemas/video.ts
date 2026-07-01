@@ -101,6 +101,15 @@ export const video = defineType({
       initialValue: 0,
     }),
     defineField({
+      name: 'trendingScore',
+      title: 'Trending Score',
+      type: 'number',
+      description:
+        'Momentum score used to rank "Trending this week": real weekly views once available, otherwise view velocity (views per day). Computed automatically.',
+      readOnly: true,
+      initialValue: 0,
+    }),
+    defineField({
       name: 'viewSnapshots',
       title: 'View Snapshots',
       type: 'array',

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Image from "next/image";
 import { client, urlFor } from "@/sanity/client";
 import { homePageQuery } from "@/lib/queries";
@@ -84,8 +85,8 @@ export default async function HomePage() {
                 Watch Now
               </h2>
             </div>
-            <a
-              href={`/watch/${liveVideo.id}`}
+            <Link
+              href="/watch"
               style={{
                 display: "block",
                 position: "relative",
@@ -126,7 +127,7 @@ export default async function HomePage() {
                   </span>
                 </div>
               </div>
-            </a>
+            </Link>
           </section>
         )}
 

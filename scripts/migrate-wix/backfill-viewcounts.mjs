@@ -37,15 +37,21 @@ async function statsFor(ids) {
   return map
 }
 
-const videos = await client.fetch(`*[_type=="video" && defined(youtubeId)]{ _id, youtubeId }`)
+const videos = await client.fetch(`*[_type=="video" && defined(youtubeId)]{ _id, youtubeId, publishedAt }`)
 console.log(`videos: ${videos.length}`)
 const stats = await statsFor(videos.map((v) => v.youtubeId))
 console.log(`fetched view counts for ${stats.size} videos`)
 
 const now = new Date().toISOString()
+// Velocity = views per day since publish — the interim trending signal until weekly deltas exist.
+const velocity = (count, publishedAt) => {
+  if (!publishedAt) return 0
+  const ageDays = Math.max(1, (Date.now() - new Date(publishedAt).getTime()) / 86400000)
+  return Math.round(count / ageDays)
+}
 let n = 0, missing = 0
 if (dryRun) {
-  const sample = videos.slice(0, 5).map((v) => `${v.youtubeId}=${stats.get(v.youtubeId)}`)
+  const sample = videos.slice(0, 5).map((v) => `${v.youtubeId}=${stats.get(v.youtubeId)} (score ${velocity(stats.get(v.youtubeId), v.publishedAt)})`)
   console.log('sample:', sample.join(', '))
   console.log('(dry-run — no writes)')
   process.exit(0)
@@ -54,7 +60,7 @@ let tx = client.transaction(), pending = 0
 for (const v of videos) {
   const count = stats.get(v.youtubeId)
   if (count == null) { missing++; continue }
-  tx = tx.patch(v._id, { set: { viewCount: count, viewSnapshots: [{ date: now, count }] } })
+  tx = tx.patch(v._id, { set: { viewCount: count, trendingScore: velocity(count, v.publishedAt), viewSnapshots: [{ date: now, count }] } })
   n++
   if (++pending >= 100) { await tx.commit({ autoGenerateArrayKeys: true }); tx = client.transaction(); pending = 0; console.log(`  patched ${n}`) }
 }
