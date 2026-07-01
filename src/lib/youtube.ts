@@ -190,10 +190,15 @@ export async function getLiveStreamStatus(): Promise<{
   const offline = { isLive: false, videoId: null, title: null, viewerCount: null };
   if (!API_KEY) return offline;
 
+  // Never let Next cache these responses — live status must be fetched fresh each render,
+  // otherwise a build-time "off air" result gets cached and reused (the prod bug).
+  const noStore: RequestInit = { cache: "no-store" };
+
   try {
     // uploads playlist id
     const chRes = await fetch(
-      `${API_BASE}/channels?${new URLSearchParams({ part: "contentDetails", id: CHANNEL_ID, key: API_KEY })}`
+      `${API_BASE}/channels?${new URLSearchParams({ part: "contentDetails", id: CHANNEL_ID, key: API_KEY })}`,
+      noStore
     );
     if (!chRes.ok) return offline;
     const chData = await chRes.json();
@@ -203,7 +208,8 @@ export async function getLiveStreamStatus(): Promise<{
 
     // most recent uploads (a live broadcast appears here)
     const plRes = await fetch(
-      `${API_BASE}/playlistItems?${new URLSearchParams({ part: "contentDetails", playlistId: uploads, maxResults: "10", key: API_KEY })}`
+      `${API_BASE}/playlistItems?${new URLSearchParams({ part: "contentDetails", playlistId: uploads, maxResults: "10", key: API_KEY })}`,
+      noStore
     );
     if (!plRes.ok) return offline;
     const plData = await plRes.json();
@@ -215,7 +221,8 @@ export async function getLiveStreamStatus(): Promise<{
 
     // find one that is currently live
     const vRes = await fetch(
-      `${API_BASE}/videos?${new URLSearchParams({ part: "snippet,liveStreamingDetails", id: ids, key: API_KEY })}`
+      `${API_BASE}/videos?${new URLSearchParams({ part: "snippet,liveStreamingDetails", id: ids, key: API_KEY })}`,
+      noStore
     );
     if (!vRes.ok) return offline;
     const vData = await vRes.json();

@@ -12,9 +12,9 @@ export const metadata = {
   description: "Watch Vishvavahini TV live — Sri Lankan community television from Australia.",
 };
 
-// Revalidate every 2 minutes so a live going on/off air is picked up quickly. Detection uses
-// the cheap uploads scan (~3 quota units), so even frequent checks stay well within quota.
-export const revalidate = 120;
+// Render fresh on every request so live/off-air is always current (no stale ISR/prerender).
+// Live detection is the cheap uploads scan (~3 quota units), well within the daily quota.
+export const dynamic = "force-dynamic";
 
 const recentVideosQuery = `*[_type == "video" && defined(youtubeId)] | order(publishedAt desc) [0...12] {
   _id, title, youtubeId, thumbnailUrl, "programmeTitle": programme->title
