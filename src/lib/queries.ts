@@ -237,6 +237,9 @@ export const searchQuery = `{
 export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   liveStreamVideoId,
   radioStreamUrl,
+  radioStationName,
+  radioStatusUrl,
+  radioWebDjUrl,
   heroHeadline,
   heroSubline,
   contactEmail,

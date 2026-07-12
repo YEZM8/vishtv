@@ -203,5 +203,43 @@ Goal: real popularity ranking + framed images in Trending/newsroom tiles.
 
 ---
 
+## Radio Integration (added 11 Jul 2026)
+
+Research: `docs/radio-integration-research.md` · Runbook: `docs/radio-operations-runbook.md`.
+Current backend: Centova Cast v3.3.2 → SHOUTcast DNAS v2 (MP3 128k). Target: self-hosted AzuraCast.
+
+### Phase 0 — Persistent web player (DONE, shipped, verified)
+- [x] `src/lib/radio.ts` — types + SHOUTcast **and** AzuraCast now-playing normalizers (auto-detected), status-URL derivation.
+- [x] `src/app/api/nowplaying/route.ts` — server proxy (fixes HTTPS/CORS), 10s cache, graceful offline. Single seam to swap backends.
+- [x] `RadioPlayerProvider` — one `<audio>` in the root layout that survives navigation; reconnect watchdog (capped backoff, intent-gated); Media Session (lock-screen) wiring; now-playing polling.
+- [x] `RadioMiniBar` (persistent across routes) + `RadioStage` (/radio player) + `PlayerIcons`.
+- [x] Sanity `siteSettings`: `radioStationName`, `radioStatusUrl` (+ query) — CMS-managed, AzuraCast-ready.
+- [x] i18n (en + si) radio keys. Verified: `tsc` clean, `eslint` clean, `next build` green, live SHOUTcast parse correct, all routes 200.
+
+### Phase 1/2 app-side — AzuraCast-ready (DONE)
+- [x] `/api/nowplaying` auto-detects SHOUTcast vs AzuraCast → **cutover is a CMS-only change** to `radioStatusUrl`. No redeploy.
+
+### Phase 3 app-side — Browser Web DJ (DONE, dormant until configured)
+- [x] Sanity `radioWebDjUrl` field (+ query); `/radio/go-live` page + `GoLivePanel` (gated); "Presenter? Go live →" link on /radio.
+
+### Infra (needs server/DNS access — see runbook)
+- [ ] Phase 1: Provision Singapore/Mumbai VPS, install AzuraCast, recreate station keeping SHOUTcast mount/URL, import library + playlists + schedule, test 24/7.
+- [ ] Phase 2: Cutover — set `radioStreamUrl`/`radioStatusUrl` in Sanity, preserve old URL via DNS/nginx, low-traffic flip, keep old box hot 1–2 wks.
+- [ ] Phase 3: Create streamer accounts, set `radioWebDjUrl` in Sanity, brief presenters (desktop; Mixxx/BUTT fallback).
+- [ ] Phase 4: HLS mount + Cloudflare; richer now-playing (album art/history) via AzuraCast SSE.
+
+### To activate the new player on production NOW (no infra change)
+- [ ] Confirm **Sanity → Site Settings → `radioStreamUrl`** is set to the SHOUTcast proxy URL (the player + now-playing then work against the existing server immediately).
+
 ## Review
 _(to be filled in after implementation)_
+
+### Radio integration review (11 Jul 2026)
+- Replaced the bare `<audio>` tag with a persistent, resilient, metadata-aware player across the whole app, using the codebase's existing React-Context pattern (no new dependencies) and design tokens.
+- Verified end-to-end against the **live** stream: status-URL derivation, now-playing parse (SHOUTcast + AzuraCast), all routes return 200, production build green. A real bug (mixed `??`/`||`) was caught by the build and fixed.
+- Backend migration is app-ready: SHOUTcast→AzuraCast cutover and Web DJ activation are **CMS-only** changes. Remaining work is infrastructure (VPS/DNS), documented in the runbook.
+
+### UI verification + reconnect bug fix (12 Jul 2026)
+- Verified radio UI in a real browser: it's in the **primary nav (Topbar + MobileDrawer), Footer, the `/radio` player, a site-wide mini-bar, and `/radio/go-live`**.
+- **Bug found & fixed during browser testing:** the player reconnected on the `<audio>` `stalled` event, which fires during normal buffering → reconnect loop ("Reconnecting…" forever). Fixed in `RadioPlayerProvider.tsx`: removed `stalled`→reconnect; now reconnects only on `error`/`ended` plus a **stall watchdog** (reconnect only if `currentTime` doesn't advance for 12s). Build green.
+- Note: audible playback couldn't be confirmed in the automation browser — a known-good public control stream (SomaFM) also stalled there, i.e. that instrumented Chrome doesn't pull continuous media streams. Stream itself is fine (fetch/curl pull audio; it plays on the live site). Verify audibly in a normal browser once `radioStreamUrl` is set in prod.

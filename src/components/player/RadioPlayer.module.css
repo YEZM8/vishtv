@@ -1,0 +1,235 @@
+/* ==========================================================================
+   Radio player — persistent mini-bar + /radio stage
+   ========================================================================== */
+
+/* --- Persistent mini-bar (all routes once playing) ----------------------- */
+.miniBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--safe);
+  padding-bottom: max(env(safe-area-inset-bottom, 0), var(--sp-2));
+  background: color-mix(in srgb, var(--bg-2) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line-2);
+  box-shadow: var(--shadow-lg);
+}
+
+.miniPlay {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.miniPlay:hover {
+  background: var(--blue-bright);
+}
+
+.miniPlay svg {
+  width: 20px;
+  height: 20px;
+}
+
+.miniPlay[data-busy] {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.miniMeta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* allow the title to truncate */
+  gap: 2px;
+}
+
+.miniStation {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs--1);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.miniStation .live-pill {
+  font-size: 0.62rem;
+  padding: 0.15em 0.5em;
+}
+
+.miniTitle {
+  font-size: var(--fs--1);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70vw;
+}
+
+/* --- /radio stage -------------------------------------------------------- */
+.stage {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: var(--sp-7) var(--sp-6);
+  margin-bottom: var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.stageArt {
+  position: relative;
+  display: inline-flex;
+  margin-bottom: var(--sp-4);
+}
+
+.stageArtImg {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+}
+
+.stageLive {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 0.7rem;
+}
+
+.stageStatus {
+  font-size: var(--fs--1);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.stageTitle {
+  font-size: var(--fs-2);
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.stageArtist {
+  font-size: var(--fs-1);
+  color: var(--text-muted);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  margin-top: var(--sp-5);
+}
+
+.bigPlay {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  box-shadow: var(--shadow);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.bigPlay:hover {
+  background: var(--blue-bright);
+  transform: translateY(-1px);
+}
+
+.bigPlay svg {
+  width: 34px;
+  height: 34px;
+}
+
+.bigPlay[data-busy] {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.volume {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.volBtn {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.volSlider {
+  width: 120px;
+  accent-color: var(--blue-bright);
+}
+
+.listeners {
+  margin-top: var(--sp-4);
+  font-size: var(--fs--1);
+  color: var(--text-dim);
+}
+
+/* --- Offline card (stream not configured) -------------------------------- */
+.offline {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: var(--sp-7);
+  color: var(--text-muted);
+  font-size: var(--fs-1);
+  text-align: center;
+}
+
+/* Hide the volume slider on coarse-pointer / small screens (OS volume there). */
+@media (max-width: 520px) {
+  .volSlider {
+    display: none;
+  }
+}
+
+/* --- Go-live (presenter) panel ------------------------------------------- */
+.goLive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+  text-align: center;
+}
+
+.goLiveTitle {
+  font-size: var(--fs-3);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.goLiveText {
+  font-size: var(--fs-1);
+  color: var(--text-muted);
+  max-width: 44ch;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.goLiveNote {
+  font-size: var(--fs--1);
+  color: var(--text-dim);
+  max-width: 46ch;
+  line-height: 1.55;
+  margin: 0;
+}

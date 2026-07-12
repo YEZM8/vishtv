@@ -24,6 +24,35 @@ export const siteSettings = defineType({
         }),
     }),
     defineField({
+      name: 'radioStationName',
+      title: 'Radio Station Name',
+      type: 'string',
+      description:
+        'Display name for the radio station (shown in the player and on lock-screen controls). Defaults to "VishTV Radio".',
+    }),
+    defineField({
+      name: 'radioStatusUrl',
+      title: 'Radio Now-Playing / Status URL',
+      type: 'url',
+      description:
+        'Optional. JSON endpoint the player polls for the current track and listener count. Leave blank to auto-derive it from the Stream URL (SHOUTcast). Set this when moving to AzuraCast/Icecast.',
+      validation: (rule) =>
+        rule.uri({
+          scheme: ['http', 'https'],
+        }),
+    }),
+    defineField({
+      name: 'radioWebDjUrl',
+      title: 'Radio Web DJ (Go Live) URL',
+      type: 'url',
+      description:
+        'Optional. Link to the browser-based DJ broadcaster (e.g. an AzuraCast Web DJ page). When set, a "Go live" page appears for presenters. Leave blank to hide it.',
+      validation: (rule) =>
+        rule.uri({
+          scheme: ['http', 'https'],
+        }),
+    }),
+    defineField({
       name: 'heroHeadline',
       title: 'Hero Headline',
       type: 'string',

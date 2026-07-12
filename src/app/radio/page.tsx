@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { client } from "@/sanity/client";
-import { siteSettingsQuery } from "@/lib/queries";
+import Link from "next/link";
 import Topbar from "@/components/layout/Topbar";
 import Footer from "@/components/layout/Footer";
+import RadioStage from "@/components/player/RadioStage";
 import styles from "./RadioPage.module.css";
 
 export const revalidate = 60;
@@ -12,10 +12,7 @@ export const metadata: Metadata = {
   description: "Listen to VishTV Radio — Sri Lankan community radio from Australia.",
 };
 
-export default async function RadioPage() {
-  const settings = await client.fetch(siteSettingsQuery);
-  const streamUrl = settings?.radioStreamUrl;
-
+export default function RadioPage() {
   return (
     <>
       <Topbar />
@@ -31,32 +28,13 @@ export default async function RadioPage() {
             Music, talk shows and live coverage — listen anywhere.
           </p>
 
-          {streamUrl ? (
-            <div className={styles.player}>
-              <div className={styles.playerLabel}>
-                <span className="live-pill">
-                  <span className="dot" aria-hidden="true" />
-                  LIVE
-                </span>
-                Now streaming
-              </div>
-              <audio controls preload="none" src={streamUrl}>
-                Your browser does not support audio playback.
-              </audio>
-            </div>
-          ) : (
-            <div className={styles.offline}>
-              <p>Radio stream is currently offline.</p>
-              <p>Check back soon or watch our TV programmes instead.</p>
-              <a
-                className="btn btn-brand"
-                href="/browse"
-                style={{ marginTop: "var(--sp-4)", display: "inline-block" }}
-              >
-                Browse programmes
-              </a>
-            </div>
-          )}
+          {/* The stream URL + now-playing come from the global player (root
+              layout), so playback started here follows the listener around. */}
+          <RadioStage />
+
+          <Link href="/radio/go-live" className={styles.presenterLink}>
+            Presenter? Go live →
+          </Link>
         </div>
       </main>
 

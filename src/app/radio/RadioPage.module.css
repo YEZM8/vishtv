@@ -56,3 +56,15 @@
   color: var(--text-muted);
   font-size: var(--fs-1);
 }
+
+.presenterLink {
+  display: inline-block;
+  margin-top: var(--sp-5);
+  font-size: var(--fs--1);
+  color: var(--text-dim);
+  transition: color 0.15s ease;
+}
+
+.presenterLink:hover {
+  color: var(--blue-bright);
+}
