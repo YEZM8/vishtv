@@ -11,6 +11,10 @@ export default defineConfig({
   name: 'vishvavahini',
   title: 'Vishvavahini TV',
 
+  // The Studio is embedded in the Next.js app at /studio (app/studio/[[...tool]]).
+  // Without this, the router reads "studio" as a tool name → "Tool not found: studio".
+  basePath: '/studio',
+
   projectId,
   dataset,
 
