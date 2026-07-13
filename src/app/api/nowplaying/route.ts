@@ -1,7 +1,7 @@
 import { client } from "@/sanity/client";
 import { siteSettingsQuery } from "@/lib/queries";
 import {
-  deriveStatusUrl,
+  resolveRadioConfig,
   normalizeNowPlaying,
   RADIO_OFFLINE,
   type RadioNowPlaying,
@@ -29,9 +29,7 @@ function json(body: RadioNowPlaying) {
 
 export async function GET() {
   const settings = await client.fetch(siteSettingsQuery);
-  const streamUrl: string | undefined = settings?.radioStreamUrl;
-  const statusUrl: string | null =
-    settings?.radioStatusUrl || (streamUrl ? deriveStatusUrl(streamUrl) : null);
+  const { statusUrl, stationName } = resolveRadioConfig(settings);
 
   if (!statusUrl) return json(RADIO_OFFLINE);
 
@@ -44,7 +42,7 @@ export async function GET() {
     const data = await res.json();
     // Auto-detects SHOUTcast vs AzuraCast from the payload shape, so migrating
     // is a CMS change to `radioStatusUrl` — no code deploy.
-    return json(normalizeNowPlaying(data, settings?.radioStationName));
+    return json(normalizeNowPlaying(data, stationName));
   } catch {
     // Upstream unreachable → present as offline rather than erroring the player.
     return json(RADIO_OFFLINE);

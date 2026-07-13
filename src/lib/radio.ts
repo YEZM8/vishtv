@@ -58,6 +58,44 @@ export function deriveStatusUrl(streamUrl: string): string | null {
   }
 }
 
+/** Resolved radio config used by the player + now-playing proxy. */
+export interface RadioConfig {
+  streamUrl: string | null;
+  stationName: string;
+  statusUrl: string | null;
+}
+
+/** The subset of Site Settings the radio cares about. */
+interface RadioSettings {
+  radioStreamUrl?: string | null;
+  radioStationName?: string | null;
+  radioStatusUrl?: string | null;
+}
+
+/**
+ * Resolve radio config with precedence **CMS (Sanity) → env var → default**.
+ * The CMS stays the source of truth, but env vars let the player work before
+ * the CMS field is populated (e.g. on a fresh preview deploy). Env vars use the
+ * `NEXT_PUBLIC_` prefix since the stream URL is public anyway; they are inlined
+ * at build time, so changing them needs a redeploy (CMS edits do not).
+ */
+export function resolveRadioConfig(settings: RadioSettings | null): RadioConfig {
+  const streamUrl =
+    settings?.radioStreamUrl || process.env.NEXT_PUBLIC_RADIO_STREAM_URL || null;
+
+  const stationName =
+    settings?.radioStationName ||
+    process.env.NEXT_PUBLIC_RADIO_STATION_NAME ||
+    RADIO_STATION_FALLBACK;
+
+  const statusUrl =
+    settings?.radioStatusUrl ||
+    process.env.NEXT_PUBLIC_RADIO_STATUS_URL ||
+    (streamUrl ? deriveStatusUrl(streamUrl) : null);
+
+  return { streamUrl, stationName, statusUrl };
+}
+
 /** Raw shape of SHOUTcast v2 `/stats?json=1` (only the fields we use). */
 interface ShoutcastStats {
   songtitle?: string;

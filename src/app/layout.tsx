@@ -6,7 +6,7 @@ import TVModeProvider from "@/components/tv/TVModeProvider";
 import RadioPlayerProvider from "@/components/player/RadioPlayerProvider";
 import { client } from "@/sanity/client";
 import { siteSettingsQuery } from "@/lib/queries";
-import { RADIO_STATION_FALLBACK } from "@/lib/radio";
+import { resolveRadioConfig } from "@/lib/radio";
 import { isIndexable } from "@/lib/seo";
 import "./globals.css";
 
@@ -36,8 +36,9 @@ export default async function RootLayout({
   // Radio config lives in the CMS; the root layout persists across navigation,
   // so the player mounted here keeps playing as the listener moves around.
   const settings = await client.fetch(siteSettingsQuery);
-  const radioStreamUrl: string | null = settings?.radioStreamUrl ?? null;
-  const radioStationName: string = settings?.radioStationName ?? RADIO_STATION_FALLBACK;
+  // CMS → env var → default, so the player works even before the CMS field is set.
+  const { streamUrl: radioStreamUrl, stationName: radioStationName } =
+    resolveRadioConfig(settings);
 
   return (
     <html lang="en">
