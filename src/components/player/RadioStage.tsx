@@ -33,6 +33,7 @@ export default function RadioStage() {
   const busy = status === "loading" || status === "reconnecting";
   const isPlaying = status === "playing";
   const active = isPlaying || busy;
+  const live = isPlaying && !!nowPlaying?.isLive;
 
   const statusLine =
     status === "reconnecting"
@@ -44,25 +45,38 @@ export default function RadioStage() {
           : t("radio.nowStreaming");
 
   return (
-    <div className={styles.stage}>
-      <div className={styles.stageArt}>
+    <div className={styles.stage} data-active={isPlaying || undefined}>
+      <div className={styles.cover} data-live={live || undefined}>
         <Image
           src="/assets/vishvavahini-logo-primary-transparent.png"
           alt=""
-          width={160}
-          height={160}
-          className={styles.stageArtImg}
+          width={140}
+          height={140}
+          className={styles.coverImg}
           priority
         />
-        {isPlaying && nowPlaying?.isLive && (
-          <span className={`live-pill ${styles.stageLive}`}>
+        <div
+          className={`${styles.eq} ${isPlaying ? styles.eqActive : ""}`}
+          aria-hidden="true"
+        >
+          <span className={styles.eqBar} />
+          <span className={styles.eqBar} />
+          <span className={styles.eqBar} />
+          <span className={styles.eqBar} />
+          <span className={styles.eqBar} />
+        </div>
+      </div>
+
+      <div className={styles.statusRow}>
+        {live && (
+          <span className="live-pill">
             <span className="dot" aria-hidden="true" />
             {t("radio.live")}
           </span>
         )}
+        <span className={styles.statusLabel}>{statusLine}</span>
       </div>
 
-      <div className={styles.stageStatus}>{statusLine}</div>
       <div className={styles.stageTitle} aria-live="polite">
         {nowPlaying?.title || nowPlaying?.station || t("radio.title")}
       </div>
@@ -103,6 +117,7 @@ export default function RadioStage() {
 
       {nowPlaying?.listeners != null && nowPlaying.listeners > 0 && (
         <div className={styles.listeners}>
+          <span className={styles.listenDot} aria-hidden="true" />
           {nowPlaying.listeners} {t("radio.listeners")}
         </div>
       )}

@@ -9,13 +9,23 @@ interface HeroProps {
   isLive?: boolean;
 }
 
+const DEFAULT_HEADLINE = "Sri Lankan voices.\nAustralian home.";
+const DEFAULT_SUBLINE =
+  "Trusted news, current affairs, drama and music for the Sri Lankan diaspora — broadcasting live from Melbourne to the world.";
+
 export default function Hero({
-  headline = "Sri Lankan voices.\nAustralian home.",
-  subline = "Trusted news, current affairs, drama and music for the Sri Lankan diaspora — broadcasting live from Melbourne to the world.",
+  headline,
+  subline,
   showTitle = "Evening News with Nirmali",
   showTime = "7:00 pm — 8:00 pm AEST",
   isLive = true,
 }: HeroProps) {
+  // `||` (not a default param) so empty/null CMS values fall back too — default
+  // params only cover `undefined`, and an empty Sanity field comes through as null.
+  const headlineText = headline || DEFAULT_HEADLINE;
+  const sublineText = subline || DEFAULT_SUBLINE;
+  const headlineLines = headlineText.split("\n");
+
   return (
     <section className={styles.hero} aria-label="Featured: live now">
       <video
@@ -49,15 +59,15 @@ export default function Hero({
         </div>
 
         <h1>
-          {headline.split("\n").map((line, i) => (
+          {headlineLines.map((line, i) => (
             <span key={i}>
               {line}
-              {i < headline.split("\n").length - 1 && <br />}
+              {i < headlineLines.length - 1 && <br />}
             </span>
           ))}
         </h1>
 
-        <p className={styles.lede}>{subline}</p>
+        <p className={styles.lede}>{sublineText}</p>
 
         <div className="cta-row">
           <Link
