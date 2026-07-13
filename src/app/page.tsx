@@ -7,6 +7,7 @@ import { videoCatalog, getVideosByProgramme } from "@/lib/video-catalog";
 import { getThumbnailUrl } from "@/lib/youtube";
 import Topbar from "@/components/layout/Topbar";
 import Hero from "@/components/hero/Hero";
+import RadioPromo from "@/components/player/RadioPromo";
 import ContentRow from "@/components/rows/ContentRow";
 import TileWide from "@/components/rows/TileWide";
 import Footer from "@/components/layout/Footer";
@@ -130,6 +131,19 @@ export default async function HomePage() {
             </Link>
           </section>
         )}
+
+        {/* Radio — Listen live promo (drives the global player) */}
+        <section
+          className="section"
+          style={{
+            paddingTop: 0,
+            paddingBottom: "var(--sp-4)",
+            paddingLeft: "var(--safe)",
+            paddingRight: "var(--safe)",
+          }}
+        >
+          <RadioPromo />
+        </section>
 
         {/* Featured Videos */}
         <ContentRow title="Featured" variant="wide">

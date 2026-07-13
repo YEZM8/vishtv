@@ -233,6 +233,17 @@ export const searchQuery = `{
   }
 }`;
 
+/** Today's schedule slots (used by the radio page "On now / Up next"). */
+export const todayScheduleQuery = `*[_type == "schedule" && date == now()] [0] {
+  date,
+  slots[] {
+    time,
+    episodeTitle,
+    isLive,
+    "programmeTitle": programme->title
+  }
+}`;
+
 /** Site settings (used by layout/topbar/footer) */
 export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   liveStreamVideoId,

@@ -58,6 +58,71 @@ export function deriveStatusUrl(streamUrl: string): string | null {
   }
 }
 
+/** One programme slot from a day's schedule. */
+export interface ScheduleSlot {
+  /** 24h start time, e.g. "14:00". */
+  time: string;
+  programmeTitle?: string | null;
+  episodeTitle?: string | null;
+  isLive?: boolean | null;
+}
+
+/** The current + next programme derived from today's schedule. */
+export interface OnNowUpNext {
+  onNow: ScheduleSlot | null;
+  upNext: ScheduleSlot | null;
+}
+
+/** Parse "HH:MM" into minutes-since-midnight, or null if malformed. */
+function slotMinutes(time: string): number | null {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(time.trim());
+  if (!m) return null;
+  const h = Number(m[1]);
+  const min = Number(m[2]);
+  if (h > 23 || min > 59) return null;
+  return h * 60 + min;
+}
+
+/** Display label for a slot (episode title falls back to programme title). */
+export function slotLabel(slot: ScheduleSlot): string {
+  return (slot.episodeTitle || slot.programmeTitle || "").trim();
+}
+
+/**
+ * Given the day's slots and the current minutes-since-midnight, work out which
+ * programme is on now and which is up next. Slots are sorted by time; "on now"
+ * is the latest slot whose start time has passed, "up next" the following one.
+ */
+export function resolveOnNowUpNext(
+  slots: ScheduleSlot[] | null | undefined,
+  nowMinutes: number,
+): OnNowUpNext {
+  if (!slots?.length) return { onNow: null, upNext: null };
+
+  const sorted = slots
+    .map((s) => ({ slot: s, mins: slotMinutes(s.time) }))
+    .filter((x): x is { slot: ScheduleSlot; mins: number } => x.mins !== null)
+    .sort((a, b) => a.mins - b.mins);
+
+  if (!sorted.length) return { onNow: null, upNext: null };
+
+  let onNowIdx = -1;
+  for (let i = 0; i < sorted.length; i++) {
+    if (sorted[i].mins <= nowMinutes) onNowIdx = i;
+    else break;
+  }
+
+  // Before the first slot of the day: nothing on yet, first slot is up next.
+  if (onNowIdx === -1) {
+    return { onNow: null, upNext: sorted[0].slot };
+  }
+
+  return {
+    onNow: sorted[onNowIdx].slot,
+    upNext: onNowIdx + 1 < sorted.length ? sorted[onNowIdx + 1].slot : null,
+  };
+}
+
 /** Resolved radio config used by the player + now-playing proxy. */
 export interface RadioConfig {
   streamUrl: string | null;

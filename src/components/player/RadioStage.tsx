@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRadioPlayer } from "./RadioPlayerProvider";
@@ -16,6 +17,29 @@ export default function RadioStage() {
   const { status, nowPlaying, streamUrl, volume, muted, toggle, setVolume, toggleMuted } =
     useRadioPlayer();
   const { t } = useLanguage();
+  const [shared, setShared] = useState(false);
+
+  const handleShare = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const shareData = {
+      title: nowPlaying?.station || t("radio.title"),
+      text: nowPlaying?.title
+        ? `${t("radio.nowStreaming")}: ${nowPlaying.title}`
+        : t("radio.subtitle"),
+      url,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      }
+    } catch {
+      // User cancelled the share sheet, or the API is unavailable — no-op.
+    }
+  };
 
   // No stream configured in the CMS → keep the existing offline treatment.
   if (!streamUrl) {
@@ -77,12 +101,37 @@ export default function RadioStage() {
         <span className={styles.statusLabel}>{statusLine}</span>
       </div>
 
-      <div className={styles.stageTitle} aria-live="polite">
-        {nowPlaying?.title || nowPlaying?.station || t("radio.title")}
-      </div>
+      {busy && !nowPlaying ? (
+        <div className={styles.titleSkeleton} aria-hidden="true" />
+      ) : (
+        <div className={styles.stageTitle} aria-live="polite">
+          {nowPlaying?.title || nowPlaying?.station || t("radio.title")}
+        </div>
+      )}
       {nowPlaying?.artist && <div className={styles.stageArtist}>{nowPlaying.artist}</div>}
 
       <div className={styles.controls}>
+        <button
+          type="button"
+          className={styles.shareBtn}
+          onClick={handleShare}
+          aria-label={t("radio.share")}
+          title={shared ? "✓" : t("radio.share")}
+        >
+          {shared ? (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+              <path d="M5 12l5 5L20 7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+            </svg>
+          )}
+        </button>
+
         <button
           type="button"
           className={styles.bigPlay}

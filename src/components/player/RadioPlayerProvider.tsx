@@ -36,6 +36,8 @@ interface RadioContextValue {
   play: () => void;
   pause: () => void;
   toggle: () => void;
+  /** Stop playback AND dismiss the persistent mini-bar (back to idle). */
+  stop: () => void;
   setVolume: (v: number) => void;
   toggleMuted: () => void;
 }
@@ -52,6 +54,29 @@ export function useRadioPlayer(): RadioContextValue {
 
 const MAX_BACKOFF_MS = 15_000;
 const POLL_INTERVAL_MS = 12_000;
+const VOLUME_KEY = "vishtv:radio:volume";
+const MUTED_KEY = "vishtv:radio:muted";
+
+/** Read the saved volume (SSR-safe); defaults to full volume. */
+function readStoredVolume(): number {
+  if (typeof window === "undefined") return 1;
+  try {
+    const v = Number(localStorage.getItem(VOLUME_KEY));
+    return Number.isNaN(v) || v < 0 || v > 1 ? 1 : v;
+  } catch {
+    return 1;
+  }
+}
+
+/** Read the saved mute flag (SSR-safe). */
+function readStoredMuted(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(MUTED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
 
 export default function RadioPlayerProvider({
   streamUrl,
@@ -76,8 +101,10 @@ export default function RadioPlayerProvider({
 
   const [status, setStatus] = useState<RadioStatus>("idle");
   const [nowPlaying, setNowPlaying] = useState<RadioNowPlaying | null>(null);
-  const [volume, setVolumeState] = useState(1);
-  const [muted, setMuted] = useState(false);
+  // Lazy-init from the listener's saved preference (guarded for SSR). This
+  // avoids a setState-in-effect and hydrates at the right value immediately.
+  const [volume, setVolumeState] = useState<number>(() => readStoredVolume());
+  const [muted, setMuted] = useState<boolean>(() => readStoredMuted());
   const [hasStarted, setHasStarted] = useState(false);
 
   // --- Playback control -----------------------------------------------------
@@ -144,6 +171,11 @@ export default function RadioPlayerProvider({
     if (wantPlayingRef.current) pause();
     else play();
   }, [pause, play]);
+
+  const stop = useCallback(() => {
+    pause();
+    setHasStarted(false); // dismiss the mini-bar
+  }, [pause]);
 
   const setVolume = useCallback((v: number) => {
     const clamped = Math.min(1, Math.max(0, v));
@@ -230,6 +262,17 @@ export default function RadioPlayerProvider({
     }
   }, [volume, muted]);
 
+  // Persist volume/mute whenever they change (initial values come from the
+  // lazy initializers above, so no restore effect is needed).
+  useEffect(() => {
+    try {
+      localStorage.setItem(VOLUME_KEY, String(volume));
+      localStorage.setItem(MUTED_KEY, muted ? "1" : "0");
+    } catch {
+      // localStorage unavailable (private mode) — ignore.
+    }
+  }, [volume, muted]);
+
   // Clear any pending reconnect timer on unmount.
   useEffect(() => clearReconnect, [clearReconnect]);
 
@@ -306,6 +349,7 @@ export default function RadioPlayerProvider({
     play,
     pause,
     toggle,
+    stop,
     setVolume,
     toggleMuted,
   };
