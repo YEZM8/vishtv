@@ -243,3 +243,13 @@ _(to be filled in after implementation)_
 - Verified radio UI in a real browser: it's in the **primary nav (Topbar + MobileDrawer), Footer, the `/radio` player, a site-wide mini-bar, and `/radio/go-live`**.
 - **Bug found & fixed during browser testing:** the player reconnected on the `<audio>` `stalled` event, which fires during normal buffering → reconnect loop ("Reconnecting…" forever). Fixed in `RadioPlayerProvider.tsx`: removed `stalled`→reconnect; now reconnects only on `error`/`ended` plus a **stall watchdog** (reconnect only if `currentTime` doesn't advance for 12s). Build green.
 - Note: audible playback couldn't be confirmed in the automation browser — a known-good public control stream (SomaFM) also stalled there, i.e. that instrumented Chrome doesn't pull continuous media streams. Stream itself is fine (fetch/curl pull audio; it plays on the live site). Verify audibly in a normal browser once `radioStreamUrl` is set in prod.
+
+### Preview activation + polish (12–13 Jul 2026)
+- Verified streaming works in Preview (user confirmed). Added CMS→env fallback (`resolveRadioConfig`, `NEXT_PUBLIC_RADIO_*`). Fixed two latent bugs surfaced along the way: Studio `basePath: '/studio'` (was "Tool not found: studio"), and Hero null crash (`heroHeadline` null → `.split` prerender error).
+- Polished radio UI: cover-art tile, animated equalizer, aligned LIVE badge (was absolutely-positioned/misaligned), glow play button.
+- Radio feature polish (commit `aaa2e84`):
+  - Mini-player: volume + stop/close, slide-up entrance, marquee for long titles.
+  - `/radio`: "On now / Up next" from today's Sanity schedule (client-computed, unit-tested resolver in `lib/radio.ts`).
+  - Homepage: "Listen live" `RadioPromo` card driving the global player.
+  - Niceties: persisted volume/mute (lazy-init), Web Share + button, buffering skeleton, reduced-motion guards; focus rings via global reset.
+- All on `dev`/preview. Still TODO: merge `dev → main` for production; AzuraCast migration (browser DJ) is separate infra work.
